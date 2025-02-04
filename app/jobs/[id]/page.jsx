@@ -115,7 +115,7 @@ export default function JobDetails({ params }) {
               </div>
 
               {/* Simplified YouTube Video Section */}
-              {job?.youtubeLink && transformYoutubeUrl(job.youtubeLink) && (
+              {/* {job?.youtubeLink && transformYoutubeUrl(job.youtubeLink) && (
                 <div className="mb-8">
                   <h2 className="text-2xl font-semibold mb-4">
                     Application Guide
@@ -134,7 +134,7 @@ export default function JobDetails({ params }) {
                     />
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Job Details and Requirements */}
               <div className="prose max-w-none mb-8">
@@ -168,7 +168,7 @@ export default function JobDetails({ params }) {
               </div>
 
               {/* Debug info - only shown in development */}
-              {process.env.NODE_ENV === "development" && (
+              {/* {process.env.NODE_ENV === "development" && ( */}
                 <div className="mt-4 p-4 bg-gray-100 rounded-lg text-sm">
                   <p>
                     Debug Why <b>choose us:</b>
@@ -179,7 +179,7 @@ export default function JobDetails({ params }) {
                     we only charge 15% fee from your first Salary&#125;
                   </p>
                 </div>
-              )}
+              {/* )} */}
             </div>
           </div>
 
