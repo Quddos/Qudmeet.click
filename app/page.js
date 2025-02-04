@@ -32,13 +32,13 @@ export default function Home() {
           content="All-in-one platform featuring AI resume analysis, mock interviews, QR code generation, and file conversion tools. Streamline your professional workflow with Qudmeet's intelligent solutions."
         />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://qudmeet.click/tools" />
+        <meta property="og:url" content="https://qudmeet.click" />
 
         {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
-          content="AI-Powered Professional Tools | Qudmeet"
+          content="AI-Powered Professional Tools | Qudmeet.click"
         />
         <meta
           name="twitter:description"
