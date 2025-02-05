@@ -9,6 +9,7 @@ export async function GET() {
     '/tools/interview',
     '/tools/research-analysis',
     '/tools/resume-analysis',
+    '/tools/ai-humanizer',
     
     
 
