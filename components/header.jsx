@@ -144,6 +144,12 @@ export default function Header() {
       icon: FileSearch,
       href: '/tools/resume-analyzer',
       description: 'AI-powered resume analysis'
+    },
+    {
+      name: 'AI Humanizer',
+      icon: Bot,
+      href: '/tools/ai-humanizer',
+      description: 'Make AI text sound more human-like'
     }
   ]
 

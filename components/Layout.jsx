@@ -11,7 +11,9 @@ export default function Layout({ children }) {
   const immediateModalPaths = [
     '/tools/tool1',
     '/tools/tool2',
-    '/tools/converter'
+    '/tools/converter',  
+    '/tools/qrcode',
+
     // Add more paths as needed
   ];
 
@@ -19,8 +21,11 @@ export default function Layout({ children }) {
   const scrollModalPaths = [
     '/tools/tool3',
     '/tools/tool4',
-    '/about',
-    // Add more paths as needed
+    '/tools/resume-analyzer',
+    '/tools/research-analyzer',
+    '/tools/ai-humanizer',
+    
+    
   ];
 
   const shouldShowImmediately = immediateModalPaths.includes(router.pathname);
