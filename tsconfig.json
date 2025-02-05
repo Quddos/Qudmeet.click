@@ -34,7 +34,7 @@
     "**/*.ts",
     "**/*.tsx",
     "components/header.jsx"
-  ],
+, "components/footer.jsx"  ],
   "exclude": [
     "node_modules",
     "**/sitemap-index.xml",
