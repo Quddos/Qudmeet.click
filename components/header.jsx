@@ -144,12 +144,6 @@ export default function Header() {
       icon: FileSearch,
       href: '/tools/resume-analyzer',
       description: 'AI-powered resume analysis'
-    },
-    {
-      name: 'AI Humanizer',
-      icon: Bot,
-      href: '/tools/ai-humanizer',
-      description: 'Make AI text sound more human-like'
     }
   ]
 
@@ -163,7 +157,7 @@ export default function Header() {
     {
       name: 'Learning Path',
       icon: GraduationCap,
-      href: '#',
+      href: '/opportunities/learning-path',
       description: 'Grow your skills'
     },
     {
@@ -330,7 +324,7 @@ export default function Header() {
               </AnimatePresence>
             </div>
             <Link
-              href="#"
+              href="/sponsor"
               className={cn(
                 'px-3 py-2 text-sm font-medium rounded-md transition-colors relative',
                 isActive('/sponsor') ? activeButtonClass : inactiveButtonClass

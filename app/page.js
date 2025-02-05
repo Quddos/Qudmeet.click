@@ -2,6 +2,7 @@ import Header from "@/components/header";
 import Head from "next/head";
 import Hero from "@/components/Hero";
 import OnboardingProcess from "@/components/OnboardingProcess";
+import Footer from "@/components/footer";
 
 export default function Home() {
   return (
@@ -48,6 +49,7 @@ export default function Home() {
       <Header />
       <Hero />
       <OnboardingProcess />
+      <Footer />
     </main>
   );
 }

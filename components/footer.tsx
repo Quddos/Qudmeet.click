@@ -19,9 +19,9 @@ const Footer = () => {
 
     const links = [
         { name: 'About us', href: '/about' },
-        { name: 'Career', href: '/career' },
-        { name: 'Investor', href: '/investor' },
-        { name: 'Project Development', href: '/projects' },
+        { name: 'Contact us', href: '/contact' },
+        { name: 'Privacy Policy', href: '/privacy-policy' },
+        { name: 'Terms of Service', href: '/terms-of-service' },
     ]
 
     return (
@@ -41,7 +41,7 @@ const Footer = () => {
             </div>
 
             {/* Main Footer Content */}
-            <div className="max-w-7xl bg-blue-400 mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="max-w-7xl bg-blue-400 from-indigo-400 to-blue-400 mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
                     {/* Navigation Links */}
                     <div className="flex flex-wrap gap-4">

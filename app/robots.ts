@@ -11,4 +11,4 @@ export default function robots(): MetadataRoute.Robots {
     ],
     sitemap: 'https://qudmeet.click/sitemap.xml'
   }
-} 
+}

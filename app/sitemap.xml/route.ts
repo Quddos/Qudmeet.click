@@ -7,12 +7,15 @@ export async function GET() {
     '',
     '/about',
     '/contact',
+    '/privacy-policy',
+    '/terms-of-service',
     '/tools/converter',
     '/tools/business-idea',
     '/tools/interview',
     '/tools/qrcode',
     '/tools/research-analysis',
     '/tools/resume-analysis',
+    '/tools/ai-humanizer'
   ]
 
   const currentDate = new Date().toISOString()
