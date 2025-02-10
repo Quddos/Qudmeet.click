@@ -2,6 +2,7 @@ import Header from '@/components/header';
 import AIHumanizer from '@/components/AIHumanizer';
 import { Toaster } from 'sonner';
 
+
 export default function AIHumanizerPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50/50 to-white">

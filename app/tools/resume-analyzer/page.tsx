@@ -2,6 +2,18 @@ import Header from '@/components/header'
 import ResumeAnalyzer from '@/components/ResumeAnalyzer'
 import { Toaster } from 'sonner'
 
+const metadata = {
+  title: 'AI Resume Analyzer | Get Expert Feedback',
+  description: 'Upload your resume and get instant AI-powered feedback on format, content, and job match potential. Improve your resume with targeted suggestions.',
+  keywords: ['resume analyzer', 'CV review', 'resume feedback', 'AI resume check', 'resume optimization'],
+  openGraph: {
+    title: 'AI Resume Analyzer',
+    description: 'Get instant expert feedback on your resume'
+  }
+};
+
+export { metadata };
+
 export default function ResumeAnalyzerPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b  from-blue-50/50 to-white">
