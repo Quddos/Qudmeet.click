@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    domains: [
+      'remotive.com',
+      'remoteok.com',
+      'assets.remoteok.com',
+      'remotive.io',
+      'jobs.github.com',
+      'logo.clearbit.com'
+    ],
+  },
   async headers() {
     return [
       {
