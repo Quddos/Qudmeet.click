@@ -8,6 +8,7 @@ import ClientLayout from "@/components/ClientLayout";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
+  metadataBase: new URL('https://qudmeet.click'),
   title: {
     default: 'Qudmeet.click',
     template: '%s | Qudmeet.click'
@@ -23,8 +24,17 @@ export const metadata = {
   ],
   authors: [{ name: 'Qudmeet' }],
   creator: 'Qudmeet',
-  robots: 'index,follow',
-  googlebot: 'index,follow',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   canonical: 'https://qudmeet.click',
   openGraph: {
     type: 'website',
@@ -57,11 +67,13 @@ export default function RootLayout({ children }) {
     <ClerkProvider>
       <html lang="en">
         <head>
-          <Script
+          {/* <Script
             async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`}
+            
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`}pub-8184615979985575
             crossOrigin="anonymous"
-          />
+          /> */}
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=pub-8184615979985575" crossorigin="anonymous"></script>
         </head>
         <body className={inter.className}>
           <Toaster />

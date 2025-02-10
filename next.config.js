@@ -23,6 +23,10 @@ const nextConfig = {
             key: 'Cross-Origin-Opener-Policy',
             value: 'same-origin',
           },
+          {
+            key: 'X-Robots-Tag',
+            value: 'index,follow'
+          }
         ],
       },
     ]
