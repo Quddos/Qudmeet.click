@@ -1,0 +1,1 @@
+google.com, ${process.env.NEXT_PUBLIC_ADSENSE_ID}, DIRECT, f08c47fec0942fa0 
