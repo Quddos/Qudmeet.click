@@ -84,7 +84,9 @@ export default function RootLayout({ children }) {
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`}pub-8184615979985575
             crossOrigin="anonymous"
           /> */}
-          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=pub-8184615979985575" crossorigin="anonymous"></script>
+          {/* <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=pub-8184615979985575" crossorigin="anonymous"></script> */}
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8184615979985575"
+     crossorigin="anonymous"></script>
         </head>
         <body className={inter.className}>
           <Toaster />
