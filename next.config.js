@@ -10,6 +10,16 @@ const nextConfig = {
       'logo.clearbit.com'
     ],
   },
+  async redirects() {
+    return [
+      // Add your permanent redirects here
+      {
+        source: '/old-page',
+        destination: '/new-page',
+        permanent: true,
+      }
+    ]
+  },
   async headers() {
     return [
       {
@@ -25,7 +35,11 @@ const nextConfig = {
           },
           {
             key: 'X-Robots-Tag',
-            value: 'index,follow'
+            value: 'index, follow'
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, must-revalidate'
           }
         ],
       },

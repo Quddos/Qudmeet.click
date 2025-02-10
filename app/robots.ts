@@ -2,11 +2,18 @@ import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-      // disallow: ['/api/*', '/private/*'],
-    },
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: ['/api/', '/private/'], // only block private routes
+      },
+      {
+        userAgent: 'Googlebot',
+        allow: '/',
+        disallow: ['/api/', '/private/'],
+      }
+    ],
     sitemap: 'https://qudmeet.click/sitemap.xml',
     host: 'https://qudmeet.click',
   }
