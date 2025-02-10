@@ -1,1 +1,1 @@
-google.com, ${process.env.NEXT_PUBLIC_ADSENSE_ID}, DIRECT, f08c47fec0942fa0 
+google.com, pub-8184615979985575, DIRECT, f08c47fec0942fa0
