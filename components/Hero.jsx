@@ -78,6 +78,17 @@ const services = [
     iconColor: "text-green-600"
   },
   {
+    icon: Bot,
+    name: "AI Humanizer",
+    href: "/tools/ai-humanizer",
+    bgColor: "bg-red-100",
+    iconColor: "text-red-600"
+
+
+
+  },
+  
+  {
     icon: GraduationCap,
     name: "Learning",
     href: "/learning",

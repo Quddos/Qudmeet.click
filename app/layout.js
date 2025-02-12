@@ -2,14 +2,75 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/toaster";
-import Script from 'next/script';
+import Script from "next/script";
 import ClientLayout from "@/components/ClientLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Qudmeet.click",
-  description: "Qudmeet is SaaS AI automation and Career Acing application, establish to help you build, earn, and enhance neccessary technologies required to land your dreama and aspiration. We provide varies of Tools and Features such as AI Demo interview, Job Opportunity, File Conversion and tools etc.",
+  metadataBase: new URL('https://qudmeet.click'),
+  title: {
+    default: 'Qudmeet.click',
+    template: '%s | Qudmeet.click'
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  description: "Qudmeet.click is SaaS AI-Hub automation and Career Acing Firm, establish to help you build, earn, and enhance neccessary technologies required to land your dreama and aspiration. We provide varies of Tools and Features such as AI Demo interview, Job Opportunity, File Conversion and tools etc.",
+  keywords: [
+    'AI interview practice',
+    'job opportunities',
+    'file conversion',
+    'career development',
+    'SaaS',
+    'AI tools'
+  ],
+  authors: [{ name: 'Qudmeet' }],
+  creator: 'Qudmeet',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  canonical: 'https://qudmeet.click',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://qudmeet.click',
+    siteName: 'Qudmeet.click',
+    title: 'Qudmeet.click - AI-Powered Hub Platform',
+    description: 'AI-powered platform for AI-Hub Support and career development, featuring interview practice, job opportunities, and file conversion tools.',
+    images: [{
+      url: '/og-image.jpg',
+      width: 1200,
+      height: 630,
+      alt: 'Qudmeet.click Platform'
+    }]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Qudmeet.click - AI Career Platform',
+    description: 'AI-powered career development tools and opportunities',
+    images: ['/twitter-image.jpg']
+  },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png'
+  }
 };
 
 export default function RootLayout({ children }) {
@@ -17,17 +78,19 @@ export default function RootLayout({ children }) {
     <ClerkProvider>
       <html lang="en">
         <head>
-          <Script
+          {/* <Script
             async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8184615979985575"
+            
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`}pub-8184615979985575
             crossOrigin="anonymous"
-          />
+          /> */}
+          {/* <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=pub-8184615979985575" crossorigin="anonymous"></script> */}
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8184615979985575"
+     crossorigin="anonymous"></script>
         </head>
         <body className={inter.className}>
-          <Toaster/>
-          <ClientLayout>
-            {children}
-          </ClientLayout>
+          <Toaster />
+          <ClientLayout>{children}</ClientLayout>
         </body>
       </html>
     </ClerkProvider>

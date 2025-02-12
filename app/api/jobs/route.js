@@ -4,21 +4,47 @@ import { eq, desc } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 import { createNotification } from '@/lib/notifications'
 
-export async function GET() {
+export async function GET(request) {
   try {
-    const jobs = await db
-      .select()
-      .from(jobPost)
-      .where(jobPost.status === 'active')
-      .orderBy(desc(jobPost.createdAt))
+    const { searchParams } = new URL(request.url)
+    const category = searchParams.get('category') || 'all'
+    
+    // Fetch jobs from multiple categories if no specific category is selected
+    const categories = category === 'all' 
+      ? ['software-dev', 'design', 'marketing', 'sales', 'customer-support']
+      : [category]
+    
+    const jobPromises = categories.map(cat => 
+      fetch(`https://remotive.com/api/remote-jobs?category=${cat}`)
+        .then(res => res.json())
+    )
+    
+    const results = await Promise.all(jobPromises)
+    const allJobs = results.flatMap(result => result.jobs)
+    
+    // Transform the Remotive API data
+    const jobs = allJobs.map(job => ({
+      id: job.id.toString(),
+      title: job.title,
+      company: job.company_name,
+      companyLogo: job.company_logo_url,
+      location: job.candidate_required_location || 'Remote',
+      jobType: job.job_type || 'Full-time',
+      category: job.category || 'Other',
+      postedDate: new Date(job.publication_date).toLocaleDateString(),
+      salary: job.salary || 'Competitive',
+      description: job.description,
+      directApplyLink: job.url,
+      tags: job.tags || [],
+      requirements: job.description // You might want to parse this better
+    }));
 
-    return NextResponse.json(jobs)
+    return Response.json(jobs);
   } catch (error) {
-    console.error('Error fetching jobs:', error)
-    return NextResponse.json(
+    return Response.json(
       { error: 'Failed to fetch jobs' },
       { status: 500 }
-    )
+    );
   }
 }
 

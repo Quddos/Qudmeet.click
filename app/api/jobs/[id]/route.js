@@ -30,25 +30,42 @@ export async function DELETE(request, { params }) {
 
 export async function GET(request, { params }) {
   try {
-    const jobs = await db
-      .select()
-      .from(jobPost)
-      .where(eq(jobPost.id, parseInt(params.id)))
-      .limit(1)
-
-    if (!jobs.length) {
-      return NextResponse.json(
+    // Fetch all jobs first (you might want to cache this)
+    const response = await fetch('https://remotive.com/api/remote-jobs')
+    const data = await response.json()
+    
+    // Find the specific job
+    const job = data.jobs.find(j => j.id.toString() === params.id)
+    
+    if (!job) {
+      return Response.json(
         { error: 'Job not found' },
         { status: 404 }
       )
     }
 
-    return NextResponse.json(jobs[0])
+    // Transform to match your structure
+    const normalizedJob = {
+      id: job.id.toString(),
+      title: job.title,
+      company: job.company_name,
+      companyLogo: job.company_logo_url,
+      location: job.candidate_required_location || 'Remote',
+      jobType: job.job_type || 'Full-time',
+      category: job.category || 'Other',
+      postedDate: new Date(job.publication_date).toLocaleDateString(),
+      salary: job.salary || 'Competitive',
+      description: job.description,
+      directApplyLink: job.url,
+      tags: job.tags || [],
+      requirements: job.description
+    }
+
+    return Response.json(normalizedJob)
   } catch (error) {
-    console.error('Error fetching job:', error)
-    return NextResponse.json(
+    return Response.json(
       { error: 'Failed to fetch job' },
       { status: 500 }
     )
   }
-} 
+}

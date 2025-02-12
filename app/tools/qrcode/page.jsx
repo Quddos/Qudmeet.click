@@ -7,6 +7,8 @@ import { Download, Link as LinkIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Header from '@/components/header'
 
+
+
 export default function QRCodePage() {
   const [text, setText] = useState('')
   const [qrSize, setQrSize] = useState(256)

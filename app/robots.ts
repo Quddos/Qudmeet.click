@@ -1,14 +1,13 @@
-import { MetadataRoute } from 'next'
-
-export default function robots(): MetadataRoute.Robots {
+export default function robots() {
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/*', '/private/*']
+        disallow: ['/api/', '/private/'], 
       }
     ],
-    sitemap: 'https://qudmeet.click/sitemap.xml'
+    sitemap: 'https://qudmeet.click/sitemap.xml',
+    host: 'https://qudmeet.click',
   }
-} 
+}

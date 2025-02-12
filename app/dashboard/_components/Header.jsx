@@ -144,7 +144,14 @@ export default function Header() {
       icon: FileSearch,
       href: '/tools/resume-analyzer',
       description: 'AI-powered resume analysis'
+    },
+    {
+      name: 'AI Humanizer',
+      icon: FileSearch,
+      href: '/tools/ai-humanizer',
+      description: 'AI-powered humanizer'
     }
+
   ]
 
   const opportunities = [

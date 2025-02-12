@@ -147,10 +147,11 @@ export default function Header() {
     },
     {
       name: 'AI Humanizer',
-      icon: Bot,
+      icon: FileSearch,
       href: '/tools/ai-humanizer',
-      description: 'Make AI text sound more human-like'
+      description: 'AI-powered humanizer'
     }
+
   ]
 
   const opportunities = [
@@ -166,6 +167,7 @@ export default function Header() {
       href: '#',
       description: 'Grow your skills'
     },
+
     {
       name: 'Community',
       icon: Users,
@@ -330,7 +332,7 @@ export default function Header() {
               </AnimatePresence>
             </div>
             <Link
-              href="#"
+              href="/sponsor"
               className={cn(
                 'px-3 py-2 text-sm font-medium rounded-md transition-colors relative',
                 isActive('/sponsor') ? activeButtonClass : inactiveButtonClass
