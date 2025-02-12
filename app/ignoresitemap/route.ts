@@ -14,7 +14,7 @@ export async function GET(): Promise<Response> {
         <loc>https://qudmeet.click/about</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
         <changefreq>daily</changefreq>
-        <priority>1.0</priority>
+        <priority>1.0</priority> 
       </url>
       <url>
         <loc>https://qudmeet.click/contact</loc>
