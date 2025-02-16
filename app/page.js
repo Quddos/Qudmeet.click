@@ -6,6 +6,15 @@ import FeaturedJobs from "@/components/FeaturedJobs";
 import CareerResources from "@/components/CareerResources";
 // import SuccessStories from "@/components/SuccessStories";
 // import BlogSection from "@/components/BlogSection";
+import dynamic from "next/dynamic";
+import UserStats from '@/components/UserStats'
+import ToolsTab from '@/components/ToolsTabs'
+const AdBanner = dynamic(() => import("@/components/Ads/AdsBanner"), {
+  ssr: false,
+});
+
+// In your render function:
+
 
 export const metadata = {
   title: 'AI Tools Suite | Resume Analyzer, Mock Interviews, QR Generator',
@@ -29,9 +38,18 @@ export default function Home() {
     <main>
       <Header />
       <Hero />
+      <UserStats />
+      <ToolsTab/>
       <OnboardingProcess />
       <FeaturedJobs />
       <CareerResources />
+      <AdBanner
+        data-ad-slot="slotnumber"
+        data-full-width-responsive="true"
+        data-ad-layout="in-article"
+        data-ad-format="fluid"
+      />
+      
       {/* <SuccessStories /> */}
       {/* <BlogSection /> */}
       <Footer />
