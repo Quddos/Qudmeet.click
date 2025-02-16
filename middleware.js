@@ -10,7 +10,7 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 const isAdminRoute = createRouteMatcher([
-    '/admin(.*)'
+    '/admin(.*)' 
 ]);
 
 
