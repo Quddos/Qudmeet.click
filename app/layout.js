@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Script from "next/script";
 import ClientLayout from "@/components/ClientLayout";
 import CookieConsent from '@/components/CookieConsent'
-
+import { Analytics } from "@vercel/analytics/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -99,6 +99,7 @@ export default function RootLayout({ children }) {
           <Toaster />
           <ClientLayout>{children}</ClientLayout>
           <CookieConsent />
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
