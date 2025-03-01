@@ -16,7 +16,7 @@
     "@clerk/nextjs": "^5.1.6",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
-    "@google/generative-ai": "^0.14.1",
+    "@google/generative-ai": "^0.22.0",
     "@googlemaps/js-api-loader": "^1.16.8",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",

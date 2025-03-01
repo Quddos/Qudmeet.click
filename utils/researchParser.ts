@@ -20,7 +20,7 @@ interface ResearchAnalysis {
 export async function parseAndAnalyzeResearch(
   pdfText: string
 ): Promise<ResearchAnalysis> {
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const prompt = `
     Analyze this research paper and provide a detailed analysis.
