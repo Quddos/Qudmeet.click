@@ -23,7 +23,7 @@ export async function parseAndScoreResume(
   resumeText: string,
   jobDescription: string
 ): Promise<ResumeScore> {
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 
   const prompt = `
     Analyze this resume against the job description provided. 
