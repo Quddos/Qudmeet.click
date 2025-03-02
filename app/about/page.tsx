@@ -54,7 +54,7 @@ export default function AboutPage() {
 analyzeResume({
   matching: "Job description alignment",
   skills: "Gap analysis",
-  feedback: "Actionable recommendations"
+  feedback: "Actionable recommendation"
 });
 
 // Professional Mock Interviews
