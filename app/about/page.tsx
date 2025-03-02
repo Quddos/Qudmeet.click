@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { CodeBlock } from "@/components/ui/code-block"
 
-import { HeroVideoDialog } from "@/components/ui/hero-video-dialog"
+
 // import  ScrollArea  from "@/components/ui/scroll-area"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Header from "@/components/header"
@@ -29,7 +29,7 @@ export default function AboutPage() {
                             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
                                 Qudmeet is your all-in-one platform for professional growth and productivity enhancement
                             </p>
-                            <HeroVideoDialog />
+                           
                         </motion.div>
                     </div>
                 </section>
