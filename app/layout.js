@@ -11,8 +11,8 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   metadataBase: new URL("https://qudmeet.click"),
   title: {
-    default: "Qudmeet.click",
-    template: "%s | Qudmeet.click",
+    default: "Qudmeet click",
+    template: "%s | Qudmeet click",
   },
   robots: {
     index: true,
@@ -26,7 +26,7 @@ export const metadata = {
     },
   },
   description:
-    "Qudmeet.click is SaaS AI-Hub automation and Career Acing Firm, establish to help you build, earn, and enhance neccessary technologies required to land your dreama and aspiration. We provide varies of Tools and Features such as AI Demo interview, Job Opportunity, File Conversion and tools etc.",
+    "Qudmeet click is SaaS AI-Hub automation and Professional Acing Firm, establish to help you build, earn, and enhance neccessary technologies required to land your dreama and aspiration. We provide varies of Tools and Features such as AI Demo interview, Job Opportunity, File Conversion and tools etc.",
   keywords: [
     "AI interview practice",
     "job opportunities",
@@ -53,7 +53,7 @@ export const metadata = {
     type: "website",
     locale: "en_US",
     url: "https://qudmeet.click",
-    siteName: "Qudmeet.click",
+    siteName: "Qudmeet click",
     title: "Qudmeet.click - AI-Powered Hub Platform",
     description:
       "AI-powered platform for AI-Hub Support and career development, featuring interview practice, job opportunities, and file conversion tools.",
