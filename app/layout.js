@@ -26,7 +26,7 @@ export const metadata = {
     },
   },
   description:
-    "Qudmeet.click is SaaS AI-Hub automation and Career Acing Firm, establish to help you build, earn, and enhance neccessary technologies required to land your dreama and aspiration. We provide varies of Tools and Features such as AI Demo interview, Job Opportunity, File Conversion and tools etc.",
+    "Qudmeet click is SaaS AI-Hub automation and Career Acing Firm, establish to help you build, earn, and enhance neccessary technologies required to land your dreama and aspiration. We provide varies of Tools and Features such as AI Demo interview, Job Opportunity, File Conversion and tools etc.",
   keywords: [
     "AI interview practice",
     "job opportunities",
@@ -53,8 +53,8 @@ export const metadata = {
     type: "website",
     locale: "en_US",
     url: "https://qudmeet.click",
-    siteName: "Qudmeet.click",
-    title: "Qudmeet.click - AI-Powered Hub Platform",
+    siteName: "Qudmeet click",
+    title: "Qudmeet click - AI-Powered Hub Platform",
     description:
       "AI-powered platform for AI-Hub Support and career development, featuring interview practice, job opportunities, and file conversion tools.",
     images: [
@@ -68,7 +68,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Qudmeet.click - AI Career Platform",
+    title: "Qudmeet click - AI Career Platform",
     description: "AI-powered career development tools and opportunities",
     images: ["/twitter-image.jpg"],
   },
