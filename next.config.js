@@ -41,10 +41,10 @@ const nextConfig = {
             key: 'Cross-Origin-Opener-Policy',
             value: 'same-origin',
           },
-          {
-            key: 'X-Robots-Tag',
-            value: 'index, follow'
-          },
+          // {
+          //   key: 'X-Robots-Tag',
+          //   value: 'index, follow'
+          // },
           {
             key: 'Cache-Control',
             value: 'public, max-age=3600, must-revalidate'
