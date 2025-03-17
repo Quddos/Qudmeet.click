@@ -3,11 +3,12 @@
 import { motion } from "framer-motion"
 import { CodeBlock } from "@/components/ui/code-block"
 
-import { HeroVideoDialog } from "@/components/ui/hero-video-dialog"
+
 // import  ScrollArea  from "@/components/ui/scroll-area"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
+import { Link } from "lucide-react"
 
 export default function AboutPage() {
     return (
@@ -29,8 +30,18 @@ export default function AboutPage() {
                             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
                                 Qudmeet is your all-in-one platform for professional growth and productivity enhancement
                             </p>
-                            <HeroVideoDialog />
+
+                            
+
+                            <button
+                                onClick={() => window.location.href = '/test-chat-pdf'}
+                                className="px-8 py-6 text-lg font-semibold rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 hover:opacity-90 transition-opacity"
+                            >
+                                Click to know "Our Ai Accuracy"
+                            </button>
+
                         </motion.div>
+                        
                     </div>
                 </section>
 
@@ -46,11 +57,11 @@ export default function AboutPage() {
                             <div>
                                 <h2 className="text-3xl font-bold mb-6">Our Suite of Tools</h2>
                                 <div className="h-[400px] rounded-md border p-6">
-                                   {/* <ScrollArea/> */}
-                                   <CodeBlock
-                                            language="javascript"
-                                            filename="tools.js"
-                                            code={`// AI-Powered Resume Analysis
+                                    {/* <ScrollArea/> */}
+                                    <CodeBlock
+                                        language="javascript"
+                                        filename="tools.js"
+                                        code={`// AI-Powered Resume Analysis
 analyzeResume({
   matching: "Job description alignment",
   skills: "Gap analysis",
@@ -77,7 +88,7 @@ convertFiles({
   batch: "Multiple files",
   quality: "Lossless conversion"
 });`}
-                                        />
+                                    />
                                 </div>
                             </div>
 

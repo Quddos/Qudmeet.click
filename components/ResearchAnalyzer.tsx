@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone'
 import { Loader2, FileText, Book, Beaker, Target, Lightbulb } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
+import ChatPDFButton from './ChatPDFButton'
 
 interface ResearchAnalysis {
   title: string;
@@ -22,6 +23,7 @@ interface ResearchAnalysis {
 
 export default function ResearchAnalyzer() {
   const [pdfText, setPdfText] = useState('')
+  const [pdfName, setPdfName] = useState('')
   const [analysis, setAnalysis] = useState<ResearchAnalysis | null>(null)
   const [loading, setLoading] = useState(false)
   const [pdfLib, setPdfLib] = useState<any>(null)
@@ -53,6 +55,7 @@ export default function ResearchAnalyzer() {
     
     if (file.type === 'application/pdf') {
       try {
+        setPdfName(file.name)
         const arrayBuffer = await file.arrayBuffer()
         
         const loadingTask = pdfLib.getDocument({
@@ -176,27 +179,46 @@ export default function ResearchAnalyzer() {
         </div>
       </motion.div>
 
-      {/* Enhanced Analyze Button */}
-      <div className="flex justify-center">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <button
           onClick={handleAnalyze}
-          disabled={loading || !pdfText}
-          className="px-24 py-4 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white rounded-full font-medium 
-            shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300
-            hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 disabled:hover:from-blue-500 disabled:hover:via-indigo-500 disabled:hover:to-purple-500
-            border border-blue-400/20"
+          disabled={!pdfText || loading}
+          className={`w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center space-x-2 ${
+            !pdfText
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : loading
+              ? 'bg-gradient-to-r from-blue-400 to-indigo-500 animate-pulse text-white'
+              : 'bg-blue-600 text-white hover:bg-blue-700'
+          }`}
         >
           {loading ? (
-            <span className="flex items-center">
-              <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5" />
+            <span className="flex items-center justify-center">
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
               Analyzing...
             </span>
           ) : (
-            'Analyze Paper'
+            'Analyze Research Paper'
           )}
-        </motion.button>
+        </button>
+        
+        {/* Desktop Chat Button */}
+        <div className="hidden sm:block">
+          <ChatPDFButton 
+            pdfText={pdfText} 
+            pdfName={pdfName} 
+            className="px-6 py-3 rounded-xl font-medium"
+          />
+        </div>
+      </div>
+
+      {/* Floating Chat Button for Mobile */}
+      <div className="sm:hidden">
+        <ChatPDFButton 
+          pdfText={pdfText} 
+          pdfName={pdfName}
+          variant="floating"
+        />
       </div>
 
       {/* Enhanced Analysis Results */}

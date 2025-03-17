@@ -1,4 +1,3 @@
-
 import Header from '@/components/header';
 
 import ResearchAnalyzer from '@/components/ResearchAnalyzer'
@@ -20,6 +19,11 @@ export default function ResearchAnalyzerPage() {
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Get instant AI-powered analysis of research papers, extracting key information and insights
               </p>
+              <div className="mt-4 bg-blue-50 p-3 rounded-lg inline-block">
+                <p className="text-sm text-blue-700">
+                  <span className="font-semibold">New!</span> You can now chat with your PDF after uploading it.
+                </p>
+              </div>
             </div>
 
             {/* Main Content */}
@@ -40,8 +44,8 @@ export default function ResearchAnalyzerPage() {
                 icon="🔍"
               />
               <FeatureCard 
-                title="Critical Review"
-                description="Understand research limitations and future work"
+                title="Chat with PDF"
+                description="Ask questions and get insights from your research paper"
                 icon="💡"
               />
             </div>

@@ -9,6 +9,9 @@ import CareerResources from "@/components/CareerResources";
 import dynamic from "next/dynamic";
 import UserStats from '@/components/UserStats'
 import ToolsTab from '@/components/ToolsTabs'
+
+
+
 const AdBanner = dynamic(() => import("@/components/Ads/AdsBanner"), {
   ssr: false,
 });
@@ -36,6 +39,8 @@ export const metadata = {
 export default function Home() {
   return (
     <main>
+
+      
       <Header />
       <Hero />
       <UserStats />

@@ -8,6 +8,7 @@ import { Doughnut } from 'react-chartjs-2';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { useInView } from 'react-intersection-observer';
+import ChatPDFButton from './ChatPDFButton'
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -46,6 +47,7 @@ interface AnalysisResponse {
 
 export default function ResumeAnalyzer() {
   const [resumeText, setResumeText] = useState('');
+  const [resumeName, setResumeName] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -145,6 +147,7 @@ export default function ResumeAnalyzer() {
     
     if (file.type === 'application/pdf') {
       try {
+        setResumeName(file.name);
         const arrayBuffer = await file.arrayBuffer();
         
         const loadingTask = pdfLib.getDocument({
@@ -371,24 +374,46 @@ export default function ResumeAnalyzer() {
             </motion.div>
           </div>
 
-          {/* Analyze Button - Updated colors */}
-          <div className="flex justify-center mt-2">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
               onClick={handleAnalyze}
-              disabled={loading}
-              className="px-8 py-4 bg-blue-600 text-white rounded-full font-medium shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-1"
+              disabled={!resumeText || !jobDescription || loading}
+              className={`px-6 py-3 rounded-xl font-medium text-white transition-all ${
+                !resumeText || !jobDescription
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : loading
+                    ? 'bg-gradient-to-r from-blue-400 to-indigo-500 animate-pulse'
+                    : 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:shadow-md'
+              }`}
             >
               {loading ? (
-                <span className="flex items-center">
-                  <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5" />
+                <span className="flex items-center justify-center">
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Analyzing...
                 </span>
               ) : (
                 'Analyze Resume'
               )}
-            </motion.button>
+            </button>
+            
+            {/* Desktop Chat Button */}
+            <div className="hidden sm:block">
+              <ChatPDFButton 
+                pdfText={resumeText} 
+                pdfName={resumeName} 
+                className="px-6 py-3 rounded-xl font-medium"
+              />
+            </div>
+          </div>
+
+          {/* Floating Chat Button for Mobile */}
+          <div className="sm:hidden">
+            <ChatPDFButton 
+              pdfText={resumeText} 
+              pdfName={resumeName}
+              variant="floating"
+            />
           </div>
 
           {/* Analysis Results */}

@@ -137,7 +137,7 @@ export default function Header() {
       name: 'Research Analyzer',
       description: 'Analyze research papers and extract key insights',
       href: '/tools/research-analyzer',
-      icon: Book, // assuming you're using Lucide icons
+      icon: Book,
     },
     {
       name: 'Resume Analyzer',
@@ -150,8 +150,8 @@ export default function Header() {
       icon: FileSearch,
       href: '/tools/ai-humanizer',
       description: 'AI-powered humanizer'
-    }
-
+    },
+ 
   ]
 
   const opportunities = [
@@ -305,6 +305,14 @@ export default function Header() {
               )}>
               About
             </Link>
+            <Link
+              href="/test-chat-pdf"
+              className={cn(
+                'px-3 py-2 text-sm font-medium rounded-md transition-colors relative',
+                isActive('/our-accuracy') ? activeButtonClass : inactiveButtonClass
+              )}>
+              AI Accuracy
+            </Link>
             
             <div className="relative group">
               <button
@@ -331,14 +339,14 @@ export default function Header() {
                 )}
               </AnimatePresence>
             </div>
-            <Link
-              href="/sponsor"
+            {/* <Link
+              href="#"
               className={cn(
                 'px-3 py-2 text-sm font-medium rounded-md transition-colors relative',
                 isActive('/sponsor') ? activeButtonClass : inactiveButtonClass
               )}>
-              Sponsor Us
-            </Link>
+              Sponsor
+            </Link> */}
             {isSignedIn ? (
               <div className="flex items-center space-x-4">
                 <Link href="/dashboard" className={cn(
@@ -442,11 +450,11 @@ export default function Header() {
                   className="block px-3 py-2 text-base font-medium text-gray-700 rounded-md hover:bg-gray-100">
                   About
                 </Link>
-                <Link
+                {/* <Link
                   href="/sponsor"
                   className="block px-3 py-2 text-base font-medium text-gray-700 rounded-md hover:bg-gray-100">
-                  Sponsor Us
-                </Link>
+                  Sponsor
+                </Link> */}
                 <div className="space-y-1">
                   <button
                     onClick={() => setIsOp2unityOpen(!isOp2unityOpen)}

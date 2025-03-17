@@ -30,6 +30,11 @@ export default function ResumeAnalyzerPage() {
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Get instant AI-powered feedback on your resume matched against job descriptions
             </p>
+            <div className="mt-4 bg-blue-50 p-3 rounded-lg inline-block">
+              <p className="text-sm text-blue-700">
+                <span className="font-semibold">New!</span> You can now chat with your resume after uploading it.
+              </p>
+            </div>
           </div>
 
             {/* Main Content */}
@@ -50,8 +55,8 @@ export default function ResumeAnalyzerPage() {
                 icon="✨"
               />
               <FeatureCard 
-                title="Actionable Feedback"
-                description="Get specific recommendations to improve your resume"
+                title="Chat with Resume"
+                description="Ask questions and get insights from your resume"
                 icon="📝"
               />
             </div>
