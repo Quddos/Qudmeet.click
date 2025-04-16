@@ -2,10 +2,11 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Loader2, FileText, Book, Beaker, Target, Lightbulb } from 'lucide-react'
+import { Loader2, FileText, SidebarClose, MessageSquare, Lightbulb } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
-import ChatPDFButton from './ChatPDFButton'
+// import PDFHistorySidebar from './PDFHistorySidebar'
+import ChatSession from './ChatSession'
 
 interface ResearchAnalysis {
   title: string;
@@ -19,6 +20,7 @@ interface ResearchAnalysis {
     tools: string[];
   };
   futureWork: string[];
+  potentialApplications?: Array<{ platform: string; description: string }>;
 }
 
 export default function ResearchAnalyzer() {
@@ -27,6 +29,7 @@ export default function ResearchAnalyzer() {
   const [analysis, setAnalysis] = useState<ResearchAnalysis | null>(null)
   const [loading, setLoading] = useState(false)
   const [pdfLib, setPdfLib] = useState<any>(null)
+  const [sidebarType, setSidebarType] = useState<'chat' | 'pdf' | null>(null)
 
   // Initialize PDF.js dynamically
   useEffect(() => {
@@ -43,65 +46,93 @@ export default function ResearchAnalyzer() {
       }
     }
     loadPdfJs()
+
+    // Add event listener for closing sidebar on mobile
+    const handleCloseSidebar = () => setSidebarType(null)
+    document.addEventListener('closeSidebar', handleCloseSidebar)
+
+    return () => {
+      document.removeEventListener('closeSidebar', handleCloseSidebar)
+    }
   }, [])
 
-  const onDrop = useCallback(async (acceptedFiles) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (!pdfLib) {
       toast.error('PDF processor is not ready. Please try again.')
       return
     }
 
     const file = acceptedFiles[0]
-    
-    if (file.type === 'application/pdf') {
-      try {
-        setPdfName(file.name)
-        const arrayBuffer = await file.arrayBuffer()
-        
-        const loadingTask = pdfLib.getDocument({
-          data: arrayBuffer,
-          useSystemFonts: true,
-        })
 
-        const pdf = await loadingTask.promise
-        let fullText = ''
-        
-        toast.info(`Processing PDF (0/${pdf.numPages} pages)`)
-        
-        for (let i = 1; i <= pdf.numPages; i++) {
-          try {
-            const page = await pdf.getPage(i)
-            const textContent = await page.getTextContent()
-            const pageText = textContent.items
-              .map((item: { str: string }) => item.str)
-              .join(' ')
-            fullText += pageText + '\n'
-            
-            toast.info(`Processing PDF (${i}/${pdf.numPages} pages)`)
-          } catch (pageError) {
-            console.error(`Error processing page ${i}:`, pageError)
-            continue
-          }
-        }
-        
-        if (!fullText.trim()) {
-          throw new Error('No text content found in PDF')
-        }
-        
-        setPdfText(fullText)
-        toast.success('Research paper uploaded successfully!')
-      } catch (error) {
-        console.error('PDF parsing error:', error)
-        if (error instanceof Error) {
-          toast.error(`Error: ${error.message}`)
-        } else {
-          toast.error('Error reading PDF file. Please try again.')
-        }
-      }
-    } else {
-      toast.error('Please upload a PDF file')
+    if (!file) return
+
+    try {
+      setPdfName(file.name)
+      setLoading(true)
+
+      // Read the file
+      const text = await readFileAsText(file, pdfLib)
+      setPdfText(text)
+
+      // Save to history
+      saveToHistory({
+        id: Date.now().toString(),
+        name: file.name,
+        date: new Date(),
+        text: text,
+        preview: text.slice(0, 200) + '...',
+        type: 'research'
+      })
+
+      toast.success('PDF uploaded successfully')
+    } catch (error) {
+      console.error('Error processing PDF:', error)
+      toast.error('Failed to process PDF')
+    } finally {
+      setLoading(false)
     }
   }, [pdfLib])
+
+  // Read PDF file as text
+  const readFileAsText = async (file: File, pdfjsLib: any): Promise<string> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const arrayBuffer = await file.arrayBuffer()
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+
+        let fullText = ''
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i)
+          const textContent = await page.getTextContent()
+          const pageText = textContent.items.map((item: any) => item.str).join(' ')
+          fullText += pageText + '\n\n'
+        }
+
+        resolve(fullText)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  // Save PDF to history
+  const saveToHistory = (pdf: any) => {
+    try {
+      const savedDocuments = localStorage.getItem('researchPDFDocuments') || '[]'
+      const documents = JSON.parse(savedDocuments)
+
+      // Add new document to the beginning
+      documents.unshift(pdf)
+
+      // Limit to 20 documents
+      const limitedDocuments = documents.slice(0, 20)
+
+      localStorage.setItem('researchPDFDocuments', JSON.stringify(limitedDocuments))
+    } catch (error) {
+      console.error('Error saving to history:', error)
+    }
+  }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -144,6 +175,8 @@ export default function ResearchAnalyzer() {
 
       const data = await response.json()
       setAnalysis(data)
+      // Save the analysis to history
+      saveToHistory(data)
       toast.success('Analysis completed successfully!')
     } catch (error) {
       console.error('Analysis error:', error)
@@ -154,225 +187,274 @@ export default function ResearchAnalyzer() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Enhanced File Upload Section */}
-      <motion.div
-        whileHover={{ scale: 1.01 }}
-        {...(getRootProps() as any)}
-        className={`border-3 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 ${
-          isDragActive
-            ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg' 
-            : 'border-gray-300 hover:border-blue-400 bg-gradient-to-br from-gray-50 to-white hover:from-blue-50 hover:to-indigo-50 hover:shadow-md'
-        }`}
-        initial={false}
-      >
-        <input {...getInputProps()} />
-        <div className="flex flex-col items-center space-y-4">
-          <FileText className={`w-12 h-12 ${isDragActive ? 'text-blue-500' : 'text-blue-400'}`} />
-          <div>
-            <p className="text-lg font-medium text-gray-800">
-              {isDragActive ? 'Drop your research paper here...' : 'Drag & drop your research paper'}
-            </p>
-            <p className="text-sm text-gray-600 mt-2">or click to select a file</p>
-          </div>
-          <p className="text-xs text-gray-500 mt-2">Supports PDF files (Max 5MB)</p>
-        </div>
-      </motion.div>
-
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <button
-          onClick={handleAnalyze}
-          disabled={!pdfText || loading}
-          className={`w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center space-x-2 ${
-            !pdfText
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : loading
-              ? 'bg-gradient-to-r from-blue-400 to-indigo-500 animate-pulse text-white'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
-          }`}
-        >
-          {loading ? (
-            <span className="flex items-center justify-center">
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              Analyzing...
-            </span>
-          ) : (
-            'Analyze Research Paper'
-          )}
-        </button>
-        
-        {/* Desktop Chat Button */}
-        <div className="hidden sm:block">
-          <ChatPDFButton 
-            pdfText={pdfText} 
-            pdfName={pdfName} 
-            className="px-6 py-3 rounded-xl font-medium"
-          />
-        </div>
-      </div>
-
-      {/* Floating Chat Button for Mobile */}
-      <div className="sm:hidden">
-        <ChatPDFButton 
-          pdfText={pdfText} 
+    <div>
+      <div className="mb-10">
+        <ChatSession
+          type="research"
+          pdfText={pdfText}
           pdfName={pdfName}
-          variant="floating"
+          className="shadow-lg"
         />
       </div>
 
-      {/* Enhanced Analysis Results */}
-      <AnimatePresence>
-        {analysis && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-8"
-          >
-            {/* Basic Information Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <InfoCard 
-                title="Title" 
-                content={analysis.title}
-                icon={<Book className="w-6 h-6" />}
-                bgColor="bg-blue-600"
-              />
-              <InfoCard 
-                title="Journal/Conference" 
-                content={analysis.journal}
-                icon={<FileText className="w-6 h-6" />}
-                bgColor="bg-yellow-500"
-              />
-              <InfoCard 
-                title="Year" 
-                content={analysis.year}
-                icon={<Target className="w-6 h-6" />}
-                bgColor="bg-green-500"
-              />
-              <InfoCard 
-                title="Area of Focus" 
-                content={analysis.areaOfFocus}
-                icon={<Beaker className="w-6 h-6" />}
-                bgColor="bg-blue-100"
-              />
+      <div className="flex flex-col sm:flex-row">
+       
+        {/* Main Content */}
+        <div className="flex-1 space-y-8 relative">
+      
+
+          {/* Enhanced File Upload Section with Header */}
+          <div className="text-center mb-4">
+            <div className="flex items-center justify-center mb-1">
+              <FileText className="w-5 h-5 mr-2 text-gray-600" />
+              <h2 className="text-lg font-medium text-gray-800">Drag & drop your research paper</h2>
             </div>
+            <p className="text-xs text-gray-500">or click to select a file</p>
+          </div>
 
-            {/* Contributions Section */}
-            <motion.div className="space-y-6">
-              <h3 className="text-2xl font-bold text-gray-900">Key Contributions</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {analysis.contributions.map((contribution, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 shadow-md
-                      hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                  >
-                    <div className="flex items-center space-x-3 mb-4">
-                      <div className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
-                        {index + 1}
-                      </div>
-                      <h4 className="font-semibold text-blue-900">{contribution.point}</h4>
-                    </div>
-                    <p className="text-gray-700">{contribution.description}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Limitations Section */}
-            <motion.div className="space-y-6">
-              <h3 className="text-2xl font-bold text-gray-900">Research Limitations</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {analysis.limitations.map((limitation, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="bg-gradient-to-br from-rose-50 to-orange-50 rounded-xl p-6 shadow-md
-                      hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                  >
-                    <div className="flex items-center space-x-3 mb-4">
-                      <div className="bg-rose-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
-                        {index + 1}
-                      </div>
-                      <h4 className="font-semibold text-rose-900">{limitation.point}</h4>
-                    </div>
-                    <p className="text-gray-700">{limitation.description}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Methodology Section */}
-            <motion.div 
-              className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-8 shadow-lg
-                hover:shadow-xl transition-all duration-300"
-            >
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Research Methodology</h3>
-              <p className="text-gray-700 mb-6">{analysis.methodology.approach}</p>
-              <div className="flex flex-wrap gap-3">
-                {analysis.methodology.tools.map((tool, index) => (
-                  <span
-                    key={index}
-                    className="px-4 py-2 bg-violet-100 text-violet-800 rounded-full text-sm font-medium
-                      hover:bg-violet-200 transition-colors duration-200"
-                  >
-                    {tool}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Future Work Section */}
-            <motion.div 
-              className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-8 shadow-lg
-                hover:shadow-xl transition-all duration-300"
-            >
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Future Work</h3>
-              <ul className="space-y-4">
-                {analysis.futureWork.map((item, index) => (
-                  <motion.li
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-start space-x-3"
-                  >
-                    <Lightbulb className="w-6 h-6 text-emerald-500 flex-shrink-0 mt-1" />
-                    <span className="text-gray-700">{item}</span>
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.01 }}
+            {...(getRootProps() as any)}
+            className={`border-3 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-300 ${isDragActive
+                ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg'
+                : 'border-gray-300 hover:border-blue-400 bg-gradient-to-br from-gray-50 to-white hover:from-blue-50 hover:to-indigo-50 hover:shadow-md'
+              }`}
+            initial={false}
+          >
+            <input {...getInputProps()} />
+            <div className="flex flex-col items-center space-y-4">
+              <FileText className={`w-12 h-12 ${isDragActive ? 'text-blue-500' : 'text-blue-400'}`} />
+              {isDragActive ? (
+                <p className="text-lg font-medium text-blue-600">Drop your research paper here...</p>
+              ) : (
+                <p className="text-sm text-gray-600">Supports PDF files (Max 5MB)</p>
+              )}
+            </div>
           </motion.div>
-        )}
-      </AnimatePresence>
+
+          {/* Action Button - Blue Bar */}
+          <div className="mt-4">
+            <button
+              onClick={handleAnalyze}
+              disabled={!pdfText || loading}
+              className={`w-full py-3 px-4 rounded-lg font-medium flex items-center justify-center ${!pdfText
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : loading
+                    ? 'bg-blue-600 animate-pulse text-white'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Analyzing...
+                </span>
+              ) : (
+                'Analyze Research Paper'
+              )}
+            </button>
+          </div>
+
+          {/* Enhanced Analysis Results */}
+          <AnimatePresence>
+            {analysis && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-8 bg-white rounded-xl p-6 shadow-lg"
+              >
+                {/* Header Section with Blue Background */}
+                {/* <div className="bg-blue-600 text-white p-4 rounded-t-lg">
+                  <h2 className="text-xl font-bold text-center">Analyze Research Paper</h2>
+                </div> */}
+
+                {/* Info Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                  {/* Title Card */}
+                  <div className="bg-blue-600 text-white p-4 rounded-lg">
+                    <div>
+                      <h3 className="text-xs font-medium mb-1">Title</h3>
+                      <p className="text-sm font-semibold">{analysis.title}</p>
+                    </div>
+                  </div>
+
+                  {/* Journal/Conference Card */}
+                  <div className="bg-yellow-500 text-white p-4 rounded-lg">
+                    <div>
+                      <h3 className="text-xs font-medium mb-1">Journal/Conference</h3>
+                      <p className="text-sm font-semibold">{analysis.journal}</p>
+                    </div>
+                  </div>
+
+                  {/* Year Card */}
+                  <div className="bg-green-500 text-white p-4 rounded-lg">
+                    <div>
+                      <h3 className="text-xs font-medium mb-1">Year</h3>
+                      <p className="text-sm font-semibold">{analysis.year}</p>
+                    </div>
+                  </div>
+
+                  {/* Area of Focus Card */}
+                  <div className="bg-blue-500 text-white p-4 rounded-lg">
+                    <div>
+                      <h3 className="text-xs font-medium mb-1">Area of Focus</h3>
+                      <p className="text-sm font-semibold">{analysis.areaOfFocus}</p>
+                    </div>
+                  </div>
+                </div>
+
+
+                {/* Enhanced Area of Focus - Full Width */}
+                {/* <div className="mt-6 bg-gradient-to-r from-blue-600 to-blue-400 text-white p-6 rounded-xl shadow-md">
+                  <h3 className="text-lg font-bold mb-2">Area of Focus</h3>
+                  <p className="text-md">{analysis.areaOfFocus}</p>
+                </div> */}
+
+                {/* Key Contributions Section */}
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Key Contributions</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {analysis.contributions.map((contribution, index) => (
+                      <div key={index} className="bg-white border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-center mb-2">
+                          <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold mr-2">
+                            {index + 1}
+                          </div>
+                          <h4 className="font-semibold text-blue-900 text-sm">{contribution.point}</h4>
+                        </div>
+                        <p className="text-gray-700 text-xs pl-8">{contribution.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Research Limitations Section */}
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Research Limitations</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {analysis.limitations.map((limitation, index) => (
+                      <div key={index} className="bg-white border border-gray-200 rounded-lg p-4">
+                        <h4 className="font-semibold text-gray-900 text-sm mb-2">{limitation.point}</h4>
+                        <p className="text-gray-700 text-xs">{limitation.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Research Methodology Section */}
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Research Methodology</h3>
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="text-xs text-gray-700">
+                      <span className="font-semibold">SPSS, student experiments, design with independent variables (virtual assistant configuration) and cognitive complexity level</span>
+                      <div className="grid grid-cols-4 gap-2 mt-3">
+                        <div className="text-center">
+                          <div className="font-semibold mb-1">Data gathering</div>
+                          <div className="text-gray-500 text-[10px]">Online surveys (N=1000+)</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="font-semibold mb-1">Virtual Reality Used</div>
+                          <div className="text-gray-500 text-[10px]">Oculus Quest 2</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="font-semibold mb-1">Software</div>
+                          <div className="text-gray-500 text-[10px]">Unity3D</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="font-semibold mb-1">Audio SDK (Recording)</div>
+                          <div className="text-gray-500 text-[10px]">Resonance</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Future Work Section */}
+                <motion.div className="space-y-6">
+                  <h3 className="text-2xl font-bold text-gray-900">Future Work</h3>
+                  <ul className="space-y-3">
+                    {analysis.futureWork.map((item, index) => (
+                      <motion.li
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="flex items-start space-x-3"
+                      >
+                        <Lightbulb className="w-6 h-6 text-emerald-500 flex-shrink-0 mt-1" />
+                        <span className="text-gray-700">{item}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </motion.div>
+
+                {/* Potential Applications with Other Technologies */}
+                {analysis.potentialApplications && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="space-y-6"
+                  >
+                    <h3 className="text-2xl font-bold text-gray-900">Applications with Other Technologies</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {analysis.potentialApplications.map((application, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-6 shadow-md
+                            hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                        >
+                          <div className="flex items-center space-x-3 mb-4">
+                            <div className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                              {index + 1}
+                            </div>
+                            <h4 className="font-semibold text-purple-900">{application.platform}</h4>
+                          </div>
+                          <p className="text-gray-700">{application.description}</p>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Chat with this PDF button */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="flex justify-center mt-8"
+                >
+                  <button
+                    onClick={() => {
+                      // Dispatch a custom event to open the chat
+                      document.dispatchEvent(new CustomEvent('openDirectChat', {
+                        detail: {
+                          pdfName: pdfName,
+                          pdfText: pdfText,
+                          type: 'research'
+                        }
+                      }))
+
+                      // Scroll to top to show the chat
+                      window.scrollTo({ top: 0, behavior: 'smooth' })
+                    }}
+                    className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-xl shadow-md hover:bg-blue-700 hover:shadow-lg transition-all"
+                  >
+                    <MessageSquare className="w-5 h-5" />
+                    <span>Chat with this Research Paper</span>
+                  </button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
   )
 }
-// Enhanced Info Card Component
-function InfoCard({ title, content, icon, bgColor }: { 
-  title: string; 
-  content: string; 
-  icon: React.ReactNode;
-  bgColor: string;
-}) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      className={`${bgColor} p-6 rounded-xl shadow-lg
-        hover:shadow-xl transition-all duration-300 hover:brightness-110`}
-    >
-      <div className="flex items-center space-x-3 mb-3">
-        <div className="text-white">{icon}</div>
-        <h3 className="font-semibold text-white">{title}</h3>
-      </div>
-      <p className="text-white/90 font-medium">{content}</p>
-    </motion.div>
-  );
-} 
+
+

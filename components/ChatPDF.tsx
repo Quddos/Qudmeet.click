@@ -2,20 +2,22 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, X, FileText, Loader2, Info, AlertTriangle, RefreshCw, BarChart, PieChart, LineChart, Download, ChevronDown, ChevronUp, BarChart2 } from 'lucide-react'
+import { Send, X, FileText, Loader2, Info, AlertTriangle, RefreshCw, BarChart, PieChart, LineChart, Download, ChevronDown, ChevronUp, BarChart2, FileDown, FileJson, FileCode } from 'lucide-react'
 import { toast } from 'sonner'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title } from 'chart.js'
 import { Pie, Bar, Line } from 'react-chartjs-2'
+import MessageFormatter from './MessageFormatter'
+import { exportChatAsText, exportChatAsMarkdown, exportChatAsJSON, exportChatAsHTML } from '../utils/exportChat'
 
 // Register ChartJS components
 ChartJS.register(
-  ArcElement, 
-  Tooltip, 
-  Legend, 
-  CategoryScale, 
-  LinearScale, 
-  BarElement, 
-  PointElement, 
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
   LineElement,
   Title
 )
@@ -37,15 +39,16 @@ interface ChatPDFProps {
   pdfText?: string
   pdfName?: string
   className?: string
+  type?: 'research' | 'resume' | 'default'
 }
 
-export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className = '' }: ChatPDFProps) {
+export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className = '', type = 'default' }: ChatPDFProps) {
   const [messages, setMessages] = useState<Message[]>([
-    { 
-      role: 'assistant', 
+    {
+      role: 'assistant',
       content: 'Hello! I\'m your PDF assistant. Ask me anything about the uploaded document. I can help you with:' +
         '\n\n• Summarizing key points' +
-        '\n• Explaining complex concepts' + 
+        '\n• Explaining complex concepts' +
         '\n• Finding specific information' +
         '\n• Answering questions about the content' +
         '\n• Creating visualizations of data' +
@@ -59,20 +62,36 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
   const [retryMessage, setRetryMessage] = useState<Message | null>(null)
   const [fontSize, setFontSize] = useState<'text-xs' | 'text-sm' | 'text-base'>('text-sm')
   const [showConversationSummary, setShowConversationSummary] = useState(false)
+  const [showExportMenu, setShowExportMenu] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  
+  const exportMenuRef = useRef<HTMLDivElement>(null)
+
   // Calculate document length and truncation status
   const documentLength = pdfText?.length || 0
   const isTruncated = documentLength > 30000
   const truncatedLength = isTruncated ? 30000 : documentLength
   const truncationPercentage = isTruncated ? Math.round((30000 / documentLength) * 100) : 100
-  
+
   // Scroll to bottom of chat when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
   }, [messages])
+
+  // Handle click outside export menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
+        setShowExportMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [exportMenuRef])
 
   // Process response for charts
   const processResponseForCharts = (response: string): { content: string, chartData?: any } => {
@@ -81,19 +100,19 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
       try {
         // Extract chart data
         const chartMatch = response.match(/```chart\s+(pie|bar|line)\s+([^`]+)```/)
-        
+
         if (chartMatch) {
           const chartType = chartMatch[1] as 'pie' | 'bar' | 'line'
           const chartDataStr = chartMatch[2].trim()
-          
+
           // Parse chart data
           const chartData = JSON.parse(chartDataStr)
-          
+
           // Remove chart code block from response
           const cleanContent = response.replace(/```chart\s+(pie|bar|line)\s+([^`]+)```/g, '')
             .replace(/\n\n\n+/g, '\n\n') // Clean up excessive newlines
             .trim()
-          
+
           return {
             content: cleanContent,
             chartData: {
@@ -128,8 +147,36 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
         console.error('Error parsing chart data:', e)
       }
     }
-    
+
     return { content: response }
+  }
+
+  // Export chat functions
+  const handleExportChat = (format: 'text' | 'markdown' | 'json' | 'html') => {
+    try {
+      const filename = `${pdfName ? pdfName.replace(/\.[^/.]+$/, '') : 'chat'}-export`
+
+      switch (format) {
+        case 'text':
+          exportChatAsText(messages, `${filename}.txt`)
+          break
+        case 'markdown':
+          exportChatAsMarkdown(messages, `${filename}.md`)
+          break
+        case 'json':
+          exportChatAsJSON(messages, `${filename}.json`)
+          break
+        case 'html':
+          exportChatAsHTML(messages, `${filename}.html`)
+          break
+      }
+
+      toast.success(`Chat exported as ${format.toUpperCase()}`)
+      setShowExportMenu(false)
+    } catch (error) {
+      console.error('Error exporting chat:', error)
+      toast.error('Failed to export chat')
+    }
   }
 
   // Generate conversation summary charts
@@ -174,17 +221,17 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
     const userMessageLengths = messages
       .filter(m => m.role === 'user')
       .map(m => m.content.length)
-    
+
     const assistantMessageLengths = messages
       .filter(m => m.role === 'assistant')
       .map(m => m.content.length)
 
-    const avgUserLength = userMessageLengths.length > 0 
-      ? Math.round(userMessageLengths.reduce((a, b) => a + b, 0) / userMessageLengths.length) 
+    const avgUserLength = userMessageLengths.length > 0
+      ? Math.round(userMessageLengths.reduce((a, b) => a + b, 0) / userMessageLengths.length)
       : 0
-    
-    const avgAssistantLength = assistantMessageLengths.length > 0 
-      ? Math.round(assistantMessageLengths.reduce((a, b) => a + b, 0) / assistantMessageLengths.length) 
+
+    const avgAssistantLength = assistantMessageLengths.length > 0
+      ? Math.round(assistantMessageLengths.reduce((a, b) => a + b, 0) / assistantMessageLengths.length)
       : 0
 
     const messageLengthData = {
@@ -216,8 +263,8 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
           .map(m => m.content.length),
         backgroundColor: messages
           .filter((_, i) => i > 0) // Skip first welcome message
-          .map(m => m.role === 'user' 
-            ? 'rgba(54, 162, 235, 0.6)' 
+          .map(m => m.role === 'user'
+            ? 'rgba(54, 162, 235, 0.6)'
             : 'rgba(75, 192, 192, 0.6)'
           ),
         borderColor: 'rgba(75, 192, 192, 1)',
@@ -227,7 +274,7 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
 
     // Topic frequency (basic implementation - counts keywords)
     const keywords = [
-      'summary', 'explain', 'chart', 'data', 'compare', 
+      'summary', 'explain', 'chart', 'data', 'compare',
       'visualization', 'model', 'accuracy', 'results', 'conclusion'
     ]
 
@@ -272,7 +319,7 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
             <BarChart2 className="h-4 w-4 mr-1.5 text-blue-500" />
             Conversation Summary
           </h3>
-          <button 
+          <button
             onClick={() => setShowConversationSummary(false)}
             className="text-gray-500 hover:text-gray-700"
           >
@@ -291,7 +338,7 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
           <div className="bg-gray-50 p-2 rounded-lg border border-gray-100">
             <h4 className="text-xs font-medium text-gray-700 mb-1">Average Message Length</h4>
             <div className="h-[120px]">
-              <Bar 
+              <Bar
                 data={messageLengthData}
                 options={{
                   indexAxis: 'y' as const,
@@ -331,14 +378,14 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
 
   // Handle sending a message
   const handleSendMessage = async (retryingMessage?: Message) => {
-    const messageToSend = retryingMessage || { 
-      role: 'user' as const, 
+    const messageToSend = retryingMessage || {
+      role: 'user' as const,
       content: input,
       timestamp: new Date()
     }
-    
+
     if ((!messageToSend.content.trim() && !retryingMessage) || loading) return
-    
+
     if (!pdfText) {
       toast.error('No PDF content available to analyze')
       return
@@ -349,15 +396,15 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
       setMessages(prev => [...prev, messageToSend])
       setInput('')
     }
-    
+
     setLoading(true)
     setError(null)
     setRetryMessage(null)
 
     try {
       // Check if the message is asking for visualization
-      const isVisualizationRequest = messageToSend.content.toLowerCase().includes('chart') || 
-                                    messageToSend.content.toLowerCase().includes('graph') || 
+      const isVisualizationRequest = messageToSend.content.toLowerCase().includes('chart') ||
+                                    messageToSend.content.toLowerCase().includes('graph') ||
                                     messageToSend.content.toLowerCase().includes('visual') ||
                                     messageToSend.content.toLowerCase().includes('plot') ||
                                     messageToSend.content.toLowerCase().includes('diagram')
@@ -368,7 +415,13 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
         enhancedPrompt += "\n\nIf you're creating a visualization, please format the chart data as a JSON object inside a code block with the format ```chart [type] [data]```, where type is 'pie', 'bar', or 'line', and data is a valid Chart.js data object with labels and datasets."
       }
 
-      const response = await fetch('/api/chat-pdf', {
+      // Determine the appropriate endpoint based on document type
+      let endpoint = '/api/chat'
+      if (pdfText) {
+        endpoint = type === 'research' ? '/api/chat-research' : '/api/chat-pdf'
+      }
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -386,12 +439,12 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
       }
 
       const data = await response.json()
-      
+
       // Process response for charts
       const { content, chartData } = processResponseForCharts(data.response)
-      
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
+
+      setMessages(prev => [...prev, {
+        role: 'assistant',
         content,
         chartData,
         timestamp: new Date()
@@ -402,8 +455,8 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
       setError(errorMessage)
       setRetryMessage(messageToSend)
       toast.error('Failed to process your question. Please try again.')
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
+      setMessages(prev => [...prev, {
+        role: 'assistant',
         content: 'Sorry, I encountered an error processing your question. Please try again with a different question or click the retry button.',
         timestamp: new Date()
       }])
@@ -448,10 +501,10 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
   // Render chart based on type
   const renderChart = (chartData: any) => {
     const { type, data, options } = chartData
-    
+
     // Smaller chart heights
     const chartHeight = type === 'bar' ? 180 : 150
-    
+
     switch (type) {
       case 'pie':
         return (
@@ -495,31 +548,86 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="p-3 border-b flex items-center justify-between bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-              <div className="flex items-center space-x-2">
-                <FileText className="h-5 w-5" />
-                <h2 className="font-semibold text-lg truncate">
-                  {pdfName ? `Chat with: ${pdfName}` : 'Chat with PDF'}
-                </h2>
+            <div className="p-4 border-b flex items-center justify-between bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+              <div className="flex items-center space-x-3">
+                <div className="bg-white/20 p-2 rounded-lg">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-lg truncate">
+                    {pdfName ? pdfName : 'Chat with PDF'}
+                  </h2>
+                  <p className="text-xs text-blue-100">Ask questions about your document</p>
+                </div>
               </div>
               <div className="flex items-center space-x-2">
+                {/* Export button */}
+                <div className="relative" ref={exportMenuRef}>
+                  <button
+                    onClick={() => setShowExportMenu(!showExportMenu)}
+                    className="p-2 hover:bg-white/20 rounded-lg transition-colors flex items-center space-x-1"
+                    title="Export conversation"
+                  >
+                    <FileDown className="h-5 w-5" />
+                  </button>
+
+                  {/* Export dropdown menu */}
+                  {showExportMenu && (
+                    <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-10 w-48">
+                      <div className="p-2 border-b border-gray-100 bg-gray-50">
+                        <h3 className="text-xs font-medium text-gray-700">Export Conversation</h3>
+                      </div>
+                      <div className="p-1">
+                        <button
+                          onClick={() => handleExportChat('text')}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2 rounded"
+                        >
+                          <FileText className="h-4 w-4 text-gray-500" />
+                          <span>Plain Text (.txt)</span>
+                        </button>
+                        <button
+                          onClick={() => handleExportChat('markdown')}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2 rounded"
+                        >
+                          <FileCode className="h-4 w-4 text-gray-500" />
+                          <span>Markdown (.md)</span>
+                        </button>
+                        <button
+                          onClick={() => handleExportChat('html')}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2 rounded"
+                        >
+                          <FileText className="h-4 w-4 text-gray-500" />
+                          <span>HTML (.html)</span>
+                        </button>
+                        <button
+                          onClick={() => handleExportChat('json')}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2 rounded"
+                        >
+                          <FileJson className="h-4 w-4 text-gray-500" />
+                          <span>JSON (.json)</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Font size controls */}
                 <div className="flex items-center space-x-1 bg-blue-600/50 rounded-lg p-1">
-                  <button 
+                  <button
                     onClick={() => handleFontSizeChange('text-xs')}
                     className={`p-1 rounded ${fontSize === 'text-xs' ? 'bg-white/20' : 'hover:bg-white/10'}`}
                     title="Small text"
                   >
                     <span className="text-xs">A</span>
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleFontSizeChange('text-sm')}
                     className={`p-1 rounded ${fontSize === 'text-sm' ? 'bg-white/20' : 'hover:bg-white/10'}`}
                     title="Medium text"
                   >
                     <span className="text-sm">A</span>
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleFontSizeChange('text-base')}
                     className={`p-1 rounded ${fontSize === 'text-base' ? 'bg-white/20' : 'hover:bg-white/10'}`}
                     title="Large text"
@@ -527,7 +635,7 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
                     <span className="text-base">A</span>
                   </button>
                 </div>
-                <button 
+                <button
                   onClick={onClose}
                   className="p-1 rounded-full hover:bg-blue-700/50 transition-colors"
                   aria-label="Close"
@@ -536,7 +644,7 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
                 </button>
               </div>
             </div>
-            
+
             {/* Document Length Indicator (if truncated) */}
             {isTruncated && (
               <div className="px-4 py-1.5 bg-amber-50 border-b border-amber-100 flex items-center">
@@ -546,7 +654,7 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
                 </p>
               </div>
             )}
-            
+
             {/* Conversation Summary Button */}
             {messages.length > 1 && !showConversationSummary && (
               <button
@@ -558,34 +666,30 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
                 <ChevronDown className="h-3.5 w-3.5 ml-1.5" />
               </button>
             )}
-            
+
             {/* Conversation Summary Charts */}
             {showConversationSummary && getConversationSummaryCharts()}
-            
+
             {/* Chat Messages */}
             <div className="flex-1 overflow-y-auto p-3 bg-gray-50">
               {messages.map((message, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className={`mb-3 ${
-                    message.role === 'user' 
-                      ? 'ml-auto max-w-[85%] sm:max-w-[80%]' 
+                    message.role === 'user'
+                      ? 'ml-auto max-w-[85%] sm:max-w-[80%]'
                       : 'mr-auto max-w-[85%] sm:max-w-[80%]'
                   }`}
                 >
-                  <div 
+                  <div
                     className={`p-2.5 rounded-lg ${fontSize} ${
                       message.role === 'user'
-                        ? 'bg-blue-500 text-white rounded-br-none'
-                        : 'bg-white border border-gray-200 shadow-sm rounded-bl-none'
+                        ? 'bg-blue-600 text-white rounded-br-none shadow-md'
+                        : 'bg-white border border-gray-200 shadow-md rounded-bl-none text-gray-800'
                     }`}
                   >
-                    {message.content.split('\n').map((line, i) => (
-                      <p key={i} className={i > 0 ? 'mt-1.5' : ''}>
-                        {line}
-                      </p>
-                    ))}
-                    
+                    <MessageFormatter content={message.content} />
+
                     {/* Render chart if available */}
                     {message.chartData && (
                       <div className="mt-2 p-1.5 bg-white/80 rounded-lg border border-gray-200">
@@ -593,7 +697,7 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
                       </div>
                     )}
                   </div>
-                  
+
                   {/* Timestamp */}
                   <div className={`text-[10px] ${message.role === 'user' ? 'text-right text-gray-500' : 'text-left text-gray-400'} mt-1`}>
                     {message.timestamp ? message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -602,7 +706,7 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
               ))}
               {loading && (
                 <div className="mr-auto max-w-[85%] sm:max-w-[80%] mb-3">
-                  <div className="p-2.5 rounded-lg bg-white border border-gray-200 shadow-sm rounded-bl-none flex items-center space-x-2">
+                  <div className="p-2.5 rounded-lg bg-white border border-gray-200 shadow-md rounded-bl-none flex items-center space-x-2">
                     <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
                     <span className="text-gray-500 text-sm">Thinking...</span>
                   </div>
@@ -616,7 +720,7 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
                       <p className="text-red-700 text-sm font-medium">Error</p>
                       <p className="text-red-600 text-xs">{error}</p>
                       <div className="flex items-center mt-2">
-                        <button 
+                        <button
                           onClick={handleRetry}
                           className="flex items-center space-x-1 text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded transition-colors"
                         >
@@ -631,17 +735,17 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
               )}
               <div ref={messagesEndRef} />
             </div>
-            
+
             {/* Example Questions */}
             {messages.length < 3 && (
-              <div className="px-3 py-2 bg-blue-50 border-t border-blue-100">
-                <p className="text-xs text-blue-700 mb-1.5">Try asking:</p>
-                <div className="flex flex-wrap gap-1.5">
+              <div className="px-4 py-3 bg-blue-50 border-t border-blue-100">
+                <p className="text-sm font-medium text-blue-700 mb-2">Try asking:</p>
+                <div className="flex flex-wrap gap-2">
                   {exampleQuestions.map((question, index) => (
                     <button
                       key={index}
                       onClick={() => handleExampleClick(question)}
-                      className="text-xs bg-white border border-blue-200 text-blue-700 px-2 py-1 rounded-full hover:bg-blue-100 transition-colors"
+                      className="text-xs bg-white shadow-sm border border-blue-200 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-colors"
                     >
                       {question}
                     </button>
@@ -649,51 +753,51 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
                 </div>
               </div>
             )}
-            
+
             {/* Input Area */}
-            <div className="p-2.5 border-t bg-white">
-              <div className="flex space-x-2">
+            <div className="p-3 border-t bg-gray-50">
+              <div className="flex space-x-2 bg-white rounded-xl shadow-sm border border-gray-200 p-1">
                 <textarea
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Ask a question about your PDF..."
-                  className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-sm"
+                  className="flex-1 p-2.5 rounded-lg focus:outline-none resize-none text-sm bg-transparent"
                   rows={2}
                   disabled={loading}
                 />
                 <button
                   onClick={() => handleSendMessage()}
                   disabled={!input.trim() || loading}
-                  className={`p-2 rounded-lg ${
+                  className={`self-end p-2.5 rounded-lg ${
                     !input.trim() || loading
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
                   } transition-colors`}
                   aria-label="Send message"
                 >
                   <Send className="h-5 w-5" />
                 </button>
               </div>
-              <div className="flex justify-between items-center mt-1.5 px-1">
-                <div className="flex items-center space-x-2">
-                  <button 
-                    className="text-xs text-gray-500 hover:text-blue-500 flex items-center space-x-1"
+              <div className="flex justify-between items-center mt-2.5 px-1">
+                <div className="flex items-center space-x-3">
+                  <button
+                    className="text-xs bg-white border border-gray-200 shadow-sm px-2.5 py-1.5 rounded-lg hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-colors flex items-center space-x-1.5"
                     title="Create chart"
                     onClick={() => setInput(prev => prev + " Create a chart of the key data points.")}
                   >
                     <BarChart className="h-3.5 w-3.5" />
-                    <span>Chart</span>
+                    <span>Create Chart</span>
                   </button>
-                  
-                  <button 
-                    className="text-xs text-gray-500 hover:text-blue-500 flex items-center space-x-1"
+
+                  <button
+                    className="text-xs bg-white border border-gray-200 shadow-sm px-2.5 py-1.5 rounded-lg hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-colors flex items-center space-x-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                     title="Show conversation summary"
                     onClick={generateConversationSummary}
                     disabled={messages.length <= 1}
                   >
                     <BarChart2 className="h-3.5 w-3.5" />
-                    <span>Summary</span>
+                    <span>View Summary</span>
                   </button>
                 </div>
                 <div className="text-xs text-gray-400">
@@ -706,4 +810,4 @@ export default function ChatPDF({ isOpen, onClose, pdfText, pdfName, className =
       )}
     </AnimatePresence>
   )
-} 
+}

@@ -9,7 +9,7 @@ import CareerResources from "@/components/CareerResources";
 import dynamic from "next/dynamic";
 import UserStats from '@/components/UserStats'
 import ToolsTab from '@/components/ToolsTabs'
-
+import LinkedInFeed from '@/components/LinkedInFeed'
 
 
 const AdBanner = dynamic(() => import("@/components/Ads/AdsBanner"), {
@@ -40,13 +40,14 @@ export default function Home() {
   return (
     <main>
 
-      
+
       <Header />
       <Hero />
       <UserStats />
       <ToolsTab/>
       <OnboardingProcess />
       <FeaturedJobs />
+      <LinkedInFeed />
       <CareerResources />
       <AdBanner
         data-ad-slot="slotnumber"
@@ -54,7 +55,7 @@ export default function Home() {
         data-ad-layout="in-article"
         data-ad-format="fluid"
       />
-      
+
       {/* <SuccessStories /> */}
       {/* <BlogSection /> */}
       <Footer />

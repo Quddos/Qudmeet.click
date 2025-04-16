@@ -9,13 +9,15 @@ interface ChatPDFButtonProps {
   pdfName?: string
   className?: string
   variant?: 'primary' | 'secondary' | 'floating'
+  onClick?: () => void
 }
 
-export default function ChatPDFButton({ 
-  pdfText, 
-  pdfName, 
+export default function ChatPDFButton({
+  pdfText,
+  pdfName,
   className = '',
-  variant = 'primary'
+  variant = 'primary',
+  onClick
 }: ChatPDFButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -25,7 +27,13 @@ export default function ChatPDFButton({
       // If no PDF text is available, don't open the chat
       return
     }
-    
+
+    if (onClick) {
+      // If an onClick handler is provided, use that instead
+      onClick()
+      return
+    }
+
     setIsLoading(true)
     // Simulate a brief loading state to indicate to the user that the chat is being prepared
     setTimeout(() => {
@@ -42,28 +50,31 @@ export default function ChatPDFButton({
           <button
             onClick={handleOpen}
             disabled={!pdfText || isLoading}
-            className={`fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 transition-colors ${
-              !pdfText || isLoading ? 'opacity-70 cursor-not-allowed bg-gray-400 hover:bg-gray-400' : ''
+            className={`fixed bottom-6 right-6 z-40 flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xl hover:shadow-blue-200 hover:scale-105 transition-all ${
+              !pdfText || isLoading ? 'opacity-70 cursor-not-allowed bg-gradient-to-r from-gray-400 to-gray-500 hover:scale-100' : ''
             } ${className}`}
             aria-label="Chat with PDF"
           >
             {isLoading ? (
-              <Loader2 className="h-6 w-6 animate-spin" />
+              <Loader2 className="h-7 w-7 animate-spin" />
             ) : (
-              <MessageSquare className="h-6 w-6" />
+              <div className="flex flex-col items-center">
+                <MessageSquare className="h-7 w-7" />
+                <span className="text-[10px] mt-1">Chat</span>
+              </div>
             )}
           </button>
-          
+
           {!pdfText && (
-            <div className="absolute bottom-20 right-0 w-48 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              Upload a resume to chat with it
+            <div className="absolute bottom-20 right-0 w-48 p-2 bg-gray-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              Upload a document to chat with it
             </div>
           )}
         </div>
 
-        <ChatPDF 
-          isOpen={isOpen} 
-          onClose={() => setIsOpen(false)} 
+        <ChatPDF
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
           pdfText={pdfText}
           pdfName={pdfName}
           className="ChatPDF-modal"
@@ -79,8 +90,8 @@ export default function ChatPDFButton({
         <button
           onClick={handleOpen}
           disabled={!pdfText || isLoading}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg border border-blue-500 text-blue-500 hover:bg-blue-50 transition-colors ${
-            !pdfText || isLoading ? 'opacity-70 cursor-not-allowed' : ''
+          className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl border-2 border-blue-500 text-blue-600 hover:bg-blue-50 transition-colors shadow-sm ${
+            !pdfText || isLoading ? 'opacity-70 cursor-not-allowed border-gray-400 text-gray-400' : ''
           } ${className}`}
         >
           {isLoading ? (
@@ -88,13 +99,13 @@ export default function ChatPDFButton({
           ) : (
             <MessageSquare className="h-5 w-5" />
           )}
-          <span className="hidden sm:inline">Chat with PDF</span>
-          <span className="sm:hidden">Chat</span>
+          <span className="hidden sm:inline font-medium">Chat with Document</span>
+          <span className="sm:hidden font-medium">Chat</span>
         </button>
 
-        <ChatPDF 
-          isOpen={isOpen} 
-          onClose={() => setIsOpen(false)} 
+        <ChatPDF
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
           pdfText={pdfText}
           pdfName={pdfName}
           className="ChatPDF-modal"
@@ -109,8 +120,8 @@ export default function ChatPDFButton({
       <button
         onClick={handleOpen}
         disabled={!pdfText || isLoading}
-        className={`flex items-center space-x-2 px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors ${
-          !pdfText || isLoading ? 'opacity-70 cursor-not-allowed' : ''
+        className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-md transition-all ${
+          !pdfText || isLoading ? 'opacity-70 cursor-not-allowed bg-gradient-to-r from-gray-400 to-gray-500' : ''
         } ${className}`}
       >
         {isLoading ? (
@@ -118,17 +129,19 @@ export default function ChatPDFButton({
         ) : (
           <MessageSquare className="h-5 w-5" />
         )}
-        <span className="hidden sm:inline">Chat with PDF</span>
-        <span className="sm:hidden">Chat</span>
+        <span className="hidden sm:inline font-medium">Chat with Document</span>
+        <span className="sm:hidden font-medium">Chat</span>
       </button>
 
-      <ChatPDF 
-        isOpen={isOpen} 
-        onClose={() => setIsOpen(false)} 
-        pdfText={pdfText}
-        pdfName={pdfName}
-        className="ChatPDF-modal"
-      />
+      {!onClick && (
+        <ChatPDF
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          pdfText={pdfText}
+          pdfName={pdfName}
+          className="ChatPDF-modal"
+        />
+      )}
     </>
   )
-} 
+}

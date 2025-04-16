@@ -22,7 +22,7 @@ const ModalContent = styled.div`
   width: 90%;
   text-align: center;
   animation: slideUp 0.5s ease-out;
-  
+
   @keyframes slideUp {
     from {
       transform: translateY(100%);
@@ -36,7 +36,7 @@ const ModalContent = styled.div`
 `;
 
 const SubscribeButton = styled.button`
-  background-color: #ff0000;
+  background-color: #0077b5;
   color: white;
   padding: 12px 24px;
   border: none;
@@ -47,7 +47,7 @@ const SubscribeButton = styled.button`
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #cc0000;
+    background-color: #005582;
   }
 `;
 
@@ -58,7 +58,7 @@ const SubscriptionModal = ({ onSubscribe, showImmediately = false }) => {
 
   useEffect(() => {
     try {
-      const subscriptionStatus = localStorage.getItem('youtubeSubscribed');
+      const subscriptionStatus = localStorage.getItem('linkedinFollowed');
       if (subscriptionStatus === 'true') {
         setHasSubscribed(true);
         return;
@@ -115,12 +115,12 @@ const SubscriptionModal = ({ onSubscribe, showImmediately = false }) => {
 
   const handleSubscribe = () => {
     try {
-      // Updated YouTube link with subscription confirmation
-      window.open('https://www.youtube.com/@Qudmeet?sub_confirmation=1', '_blank');
-      localStorage.setItem('youtubeSubscribed', 'true');
+      // LinkedIn company page link
+      window.open('https://www.linkedin.com/company/105658013', '_blank');
+      localStorage.setItem('linkedinFollowed', 'true');
       setHasSubscribed(true);
       setIsVisible(false);
-      
+
       if (onSubscribe) {
         onSubscribe();
       }
@@ -134,18 +134,18 @@ const SubscriptionModal = ({ onSubscribe, showImmediately = false }) => {
   return (
     <ModalOverlay>
       <ModalContent>
-        <h2>Subscribe to Continue</h2>
+        <h2>Follow Us to Continue</h2>
         <p>
           We plan to make these tools generally free for usage. To help us grow
-          and continue using our tools, kindly subscribe to our YouTube channel
+          and continue using our tools, kindly follow our LinkedIn company page
           to gain access and continue using the tools.
         </p>
         <SubscribeButton onClick={handleSubscribe}>
-          Subscribe to Qudmeet
+          Follow Qudmeet on LinkedIn
         </SubscribeButton>
       </ModalContent>
     </ModalOverlay>
   );
 };
 
-export default SubscriptionModal; 
+export default SubscriptionModal;

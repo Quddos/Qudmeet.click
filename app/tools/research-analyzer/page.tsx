@@ -12,7 +12,7 @@ export default function ResearchAnalyzerPage() {
         <div className="pt-20 pb-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Hero Section */}
-            <div className="text-center mb-10">
+            <div className="text-center mb-6 sm:mb-10">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 Research Paper Analyzer
               </h1>

@@ -37,17 +37,6 @@ export const metadata = {
   ],
   authors: [{ name: "Qudmeet" }],
   creator: "Qudmeet",
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
   canonical: "https://qudmeet.click",
   openGraph: {
     type: "website",
@@ -83,11 +72,11 @@ export default function RootLayout({ children }) {
     <ClerkProvider>
       <html lang="en">
         <head>
-        <meta name="description" content="Your site description" />
+        <meta name="description" content="Qudmeet click is SaaS AI-Hub automation and Career Acing Firm, helping you build, earn, and enhance technologies required to land your dream and aspiration." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta charSet="utf-8" />
-        {/* Add robots meta if you want search engines to index your site */}
         <meta name="robots" content="index, follow" />
+        <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
           <script
             async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8184615979985575"
