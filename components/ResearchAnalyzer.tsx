@@ -198,6 +198,34 @@ export default function ResearchAnalyzer() {
       </div>
 
       <div className="flex flex-col sm:flex-row">
+        {/* Sidebar - Removed */}
+        {/* <AnimatePresence>
+          {sidebarType && (
+            <motion.div
+              initial={{ width: 0, height: 0, opacity: 0 }}
+              animate={{
+                width: window.innerWidth < 640 ? '100%' : '300px',
+                height: window.innerWidth < 640 ? 'auto' : '100%',
+                opacity: 1
+              }}
+              exit={{ width: 0, height: window.innerWidth < 640 ? 0 : 'auto', opacity: 0 }}
+              className="sm:h-full border-r border-gray-200 overflow-hidden fixed sm:relative top-0 left-0 w-full sm:w-auto z-30 bg-white shadow-lg"
+            >
+              {sidebarType === 'pdf' && (
+                <PDFHistorySidebar
+                  type="research"
+                  onSelectPDF={(pdf) => {
+                    // Load the selected PDF
+                    setPdfName(pdf.name)
+                    setPdfText(pdf.text)
+                    toast.success(`Loaded PDF: ${pdf.name}`)
+                    setSidebarType(null) // Close sidebar after selection
+                  }}
+                />
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence> */}
        
         {/* Main Content */}
         <div className="flex-1 space-y-8 relative">
@@ -270,7 +298,7 @@ export default function ResearchAnalyzer() {
                 </div> */}
 
                 {/* Info Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                   {/* Title Card */}
                   <div className="bg-blue-600 text-white p-4 rounded-lg">
                     <div>
@@ -294,22 +322,14 @@ export default function ResearchAnalyzer() {
                       <p className="text-sm font-semibold">{analysis.year}</p>
                     </div>
                   </div>
-
-                  {/* Area of Focus Card */}
-                  <div className="bg-blue-500 text-white p-4 rounded-lg">
-                    <div>
-                      <h3 className="text-xs font-medium mb-1">Area of Focus</h3>
-                      <p className="text-sm font-semibold">{analysis.areaOfFocus}</p>
-                    </div>
-                  </div>
                 </div>
 
 
                 {/* Enhanced Area of Focus - Full Width */}
-                {/* <div className="mt-6 bg-gradient-to-r from-blue-600 to-blue-400 text-white p-6 rounded-xl shadow-md">
-                  <h3 className="text-lg font-bold mb-2">Area of Focus</h3>
-                  <p className="text-md">{analysis.areaOfFocus}</p>
-                </div> */}
+                <div className="mt-6 bg-gradient-to-r from-blue-700 to-blue-500 text-white p-6 rounded-xl shadow-lg">
+                  <h3 className="text-xl font-bold mb-3">Area of Focus</h3>
+                  <p className="text-lg">{analysis.areaOfFocus}</p>
+                </div>
 
                 {/* Key Contributions Section */}
                 <div className="mt-8">
