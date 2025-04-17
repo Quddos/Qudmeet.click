@@ -313,35 +313,21 @@ export default function ResumeAnalyzer() {
                 Upload Your Resume
               </motion.h2>
               
-              <motion.div 
-                variants={itemVariants}
+              <div
                 {...getRootProps()}
                 className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 ${
                   isDragActive
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-purple-200 hover:border-purple-400 hover:bg-purple-50/50'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'
                 }`}
               >
-                <input {...getInputProps()} />
-                <FileText className={`w-10 h-10 mx-auto mb-4 ${isDragActive ? 'text-purple-500' : 'text-purple-400'}`} />
-                <p className="text-gray-600">
-                  {isDragActive
-                    ? 'Drop your resume here'
-                    : 'Drag & drop your resume, or click to select file'}
-                </p>
-                <p className="text-xs text-purple-500 mt-2">PDF, DOCX, or TXT (Max 5MB)</p>
-                
-                {resumeText && (
-                  <div className="mt-2">
-                    <textarea
-                      className="w-full min-h-[100px] p-4 rounded-xl border-2 border-purple-100 focus:border-purple-300 focus:ring-2 focus:ring-purple-200 transition-all resize-none bg-white/80 backdrop-blur-sm"
-                      value={resumeText}
-                      onChange={(e) => setResumeText(e.target.value)}
-                      placeholder="Resume content..."
-                    />
-                  </div>
-                )}
-              </motion.div>
+                <motion.div variants={itemVariants}>
+                  <input {...getInputProps()} />
+                  <FileText className={`w-12 h-12 mx-auto mb-4 ${isDragActive ? 'text-blue-500' : 'text-blue-400'}`} />
+                  <p className="text-gray-700">Drag & drop your resume here, or click to select a file</p>
+                  <p className="text-xs text-gray-500 mt-2">Supports PDF files (Max 5MB)</p>
+                </motion.div>
+              </div>
             </motion.div>
 
             {/* Job Description Section */}
