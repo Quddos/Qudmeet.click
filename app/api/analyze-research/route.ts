@@ -24,7 +24,7 @@ IMPORTANT: Your response MUST adhere to this EXACT JSON structure:
   "title": "Research Paper Title",
   "journal": "Publication Source (Journal/Conference)",
   "year": "Publication Year",
-  "areaOfFocus": "Research domain with specific focus",
+  
   "contributions": [
     {
       "point": "Short 1-5 word key contribution heading",
@@ -39,6 +39,7 @@ IMPORTANT: Your response MUST adhere to this EXACT JSON structure:
     },
     // 2-3 more limitations
   ],
+  "areaOfFocus": "Research domain with specific focus",
   "methodology": {
     "approach": "Brief description of research approach",
     "tools": ["Tool/Technology 1", "Tool/Technology 2", "Tool/Technology 3"]
@@ -48,28 +49,15 @@ IMPORTANT: Your response MUST adhere to this EXACT JSON structure:
     "Future research direction 2",
     "Future research direction 3"
   ],
-  "potentialApplications": [
-    {
-      "platform": "Meta Quest / VR",
-      "description": "How these findings could be applied in VR environments"
-    },
-    {
-      "platform": "Unity Development",
-      "description": "How Unity game engine could be used to implement these concepts"
-    },
-    {
-      "platform": "Machine Learning",
-      "description": "How ML techniques could enhance the applications"
-    }
-  ]
+  
 }
 
-When analyzing a paper on Augmented Reality (AR), also consider its applications in Virtual Reality (VR), game development using Unity, and potential machine learning integrations. For the potentialApplications field, be creative and suggest practical ways to implement the research concepts using these technologies.
+Ensure exactly 3 contributions and 3 limitations are provided, each with a brief point and detailed description.
 
 Research Paper Text:
 ${truncatedPdfText}
 
-Remember to format your ENTIRE response as valid JSON according to the schema above. Include exactly 3 contributions, 3 limitations, 3 future work directions, and the 3 potential applications specified in the schema. Do not include any explanations, headers, or text outside the JSON structure.`
+Remember to format your ENTIRE response as valid JSON according to the schema above. Include exactly 3 contributions, 3 limitations, and 3 future work directions specified in the schema. Do not include any explanations, headers, or text outside the JSON structure.`
 
     // Set up generation config with larger output tokens and stricter temperature
     const generationConfig = {
@@ -98,7 +86,7 @@ Remember to format your ENTIRE response as valid JSON according to the schema ab
         const jsonObj = JSON.parse(text);
         
         // Validate required fields
-        const requiredFields = ['title', 'journal', 'year', 'areaOfFocus', 'contributions', 'limitations', 'methodology', 'futureWork', 'potentialApplications'];
+        const requiredFields = ['title', 'journal', 'year',  'contributions', 'limitations', 'areaOfFocus', 'methodology', 'futureWork'];
         const missingFields = requiredFields.filter(field => !jsonObj[field]);
         
         if (missingFields.length > 0) {
@@ -117,8 +105,7 @@ Remember to format your ENTIRE response as valid JSON according to the schema ab
       // Fallback to a simpler prompt
       const fallbackPrompt = `Analyze this research paper and provide a simplified analysis as JSON. 
       Format must be valid JSON with these fields: title, journal, year, areaOfFocus, contributions (array of 3 objects with point and description), 
-      limitations (array of 3 objects with point and description), methodology (object with approach and tools array), futureWork (array of 3 strings),
-      and potentialApplications (array of 3 objects with platform and description fields for Meta Quest/VR, Unity, and ML).
+      limitations (array of 3 objects with point and description), methodology (object with approach and tools array), futureWork (array of 3 strings).
       
       Paper: ${truncatedPdfText.slice(0, 15000)}`;
       
@@ -133,23 +120,20 @@ Remember to format your ENTIRE response as valid JSON according to the schema ab
           title: "Could not determine paper title",
           journal: "Unknown source",
           year: "Unknown",
-          areaOfFocus: "Research paper analysis",
+         
           contributions: [
             { point: "Main finding", description: "The paper appears to discuss research findings but details could not be extracted." }
           ],
           limitations: [
             { point: "Analysis limitation", description: "The analysis system encountered difficulties processing this paper." }
           ],
+          areaOfFocus: "Research paper analysis",
           methodology: {
             approach: "Could not determine methodology",
             tools: ["Unknown"]
           },
-          futureWork: ["Further analysis recommended"],
-          potentialApplications: [
-            { platform: "Meta Quest / VR", description: "Could be used for immersive visualization of the research concepts." },
-            { platform: "Unity Development", description: "Unity could provide a development environment for implementing related applications." },
-            { platform: "Machine Learning", description: "ML techniques could enhance and automate aspects of the research findings." }
-          ]
+          futureWork: ["Further analysis recommended"]
+          
         });
       }
     }
