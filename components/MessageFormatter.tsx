@@ -122,23 +122,39 @@ export default function MessageFormatter({ content, className = '' }: MessageFor
   
   // Format inline elements like bold, italic, links
   const formatInlineElements = (text: string) => {
+    // First, handle malformed asterisks or standalone asterisks
+    let formatted = text;
+    
+    // Clean up patterns like * **Text** or ** *Text* or other odd combinations
+    formatted = formatted.replace(/\*\s*\*\*([^*]+)\*\*\s*\*/g, '<strong class="font-bold text-black dark:text-white">$1</strong>');
+    formatted = formatted.replace(/\*\*\s*\*([^*]+)\*\s*\*\*/g, '<em class="italic">$1</em>');
+    
+    // Replace standalone asterisks with HTML entities
+    formatted = formatted.replace(/(\s)\*(\s)/g, '$1&#42;$2');
+    formatted = formatted.replace(/^(\*\s)/g, '&#42; ');
+    
+    // Now handle standard markdown formats
     // Convert markdown bold (**text**) to HTML strong tags
-    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-black dark:text-white">$1</strong>')
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-black dark:text-white">$1</strong>');
     
     // Convert markdown italic (*text*) to HTML em tags
-    formatted = formatted.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+    formatted = formatted.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
     
     // Convert markdown links ([text](url)) to HTML a tags
-    formatted = formatted.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">$1</a>')
+    formatted = formatted.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">$1</a>');
     
     // Convert markdown inline code (`code`) to HTML code tags
-    formatted = formatted.replace(/`(.*?)`/g, '<code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono">$1</code>')
+    formatted = formatted.replace(/`(.*?)`/g, '<code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono">$1</code>');
     
     // Highlight important information (e.g., "Important: text" or "Note: text")
     formatted = formatted.replace(/(Important|Note|Warning|Tip):\s+(.*?)(?=\s*(?:<br>|$))/gi, 
       '<span class="font-bold">$1:</span> <span class="bg-yellow-50 dark:bg-yellow-900/30 px-1 rounded">$2</span>');
     
-    return <span dangerouslySetInnerHTML={{ __html: formatted }} />
+    // Format section titles that might be coming from the AI
+    formatted = formatted.replace(/^(The\s+\w+\s+(?:Debate|Industries|Evolution|Studies).*?):/gim, 
+      '<h3 class="font-bold text-lg text-blue-800 dark:text-blue-400 mt-4 mb-2">$1:</h3>');
+    
+    return <span dangerouslySetInnerHTML={{ __html: formatted }} />;
   }
   
   return (
