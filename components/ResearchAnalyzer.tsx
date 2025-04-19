@@ -326,7 +326,7 @@ export default function ResearchAnalyzer() {
 
 
                 {/* Enhanced Area of Focus - Full Width */}
-                <div className="mt-6 bg-gradient-to-r from-blue-700 to-blue-500 text-white p-6 rounded-xl shadow-lg">
+                <div className="mt-6 bg-blue-100 border border-blue-300 text-blue-900 p-6 rounded-xl shadow-md">
                   <h3 className="text-xl font-bold mb-3">Area of Focus</h3>
                   <p className="text-lg">{analysis.areaOfFocus}</p>
                 </div>
@@ -367,24 +367,13 @@ export default function ResearchAnalyzer() {
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Research Methodology</h3>
                   <div className="bg-white border border-gray-200 rounded-lg p-4">
                     <div className="text-xs text-gray-700">
-                      <span className="font-semibold">SPSS, student experiments, design with independent variables (virtual assistant configuration) and cognitive complexity level</span>
-                      <div className="grid grid-cols-4 gap-2 mt-3">
-                        <div className="text-center">
-                          <div className="font-semibold mb-1">Data gathering</div>
-                          <div className="text-gray-500 text-[10px]">Online surveys (N=1000+)</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-semibold mb-1">Virtual Reality Used</div>
-                          <div className="text-gray-500 text-[10px]">Oculus Quest 2</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-semibold mb-1">Software</div>
-                          <div className="text-gray-500 text-[10px]">Unity3D</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-semibold mb-1">Audio SDK (Recording)</div>
-                          <div className="text-gray-500 text-[10px]">Resonance</div>
-                        </div>
+                      <span className="font-semibold text-gray-800 text-sm mb-3 block">{analysis.methodology.approach}</span>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+                        {analysis.methodology.tools.map((tool, index) => (
+                          <div key={index} className="bg-violet-100 text-violet-800 rounded-full px-4 py-2 text-sm font-medium text-center">
+                            {tool}
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>

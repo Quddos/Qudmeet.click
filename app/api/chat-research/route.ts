@@ -37,7 +37,7 @@ YOUR CAPABILITIES:
 
 2. GENERAL KNOWLEDGE:
    - Provide information on topics not covered in the paper
-   - Answer questions about related technologies, frameworks, and platforms (e.g., Meta Quest, Unity ML, game engines)
+   - Answer questions about related technologies, frameworks, and platforms (e.g of the paper)
    - Explain how concepts from the paper could be implemented using specific tools
    - Suggest methodologies for applying paper concepts in different contexts
 
@@ -49,8 +49,11 @@ YOUR CAPABILITIES:
 GUIDELINES:
 - When answering questions about the paper, clearly indicate what information comes from the paper versus your general knowledge
 - Don't claim the paper mentions something it doesn't - be transparent about the source of your information
-- When asked about topics not in the paper (like Meta Quest or Unity ML), freely draw on your general knowledge
-- Format responses with markdown for readability
+- When asked about topics not in the paper, freely draw on your general knowledge
+- Format responses with HTML instead of markdown for better readability:
+  - For important points, use phrases like "Important:" or "Note:" at the beginning of sentences
+  - Avoid using ** for bold text, as the system will automatically format key terms appropriately
+  - Use clear section headings when organizing information
 - If asked how to implement concepts from the paper using specific tools/platforms not mentioned in the paper, provide helpful guidance
 - When discussing AR/VR technologies, provide practical implementation details when requested`;
 
@@ -99,7 +102,7 @@ GUIDELINES:
         // Determine if question likely requires general knowledge
         const userQuestion = lastMessage.content.toLowerCase();
         const generalKnowledgeIndicators = [
-          'meta quest', 'unity', 'game engine', 'how would', 'how to implement', 
+          'what is', 'how does', 'how would', 'how to implement', 
           'can you guide', 'methodology', 'what if', 'beyond the paper', 
           'outside of this research', 'what is', 'how can i', 'guide me'
         ];

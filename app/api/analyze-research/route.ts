@@ -41,7 +41,7 @@ IMPORTANT: Your response MUST adhere to this EXACT JSON structure:
   ],
   "areaOfFocus": "Research domain with specific focus",
   "methodology": {
-    "approach": "Brief description of research approach",
+    "approach": "General description of the research approach",
     "tools": ["Tool/Technology 1", "Tool/Technology 2", "Tool/Technology 3"]
   },
   "futureWork": [

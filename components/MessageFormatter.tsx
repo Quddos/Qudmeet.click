@@ -122,17 +122,21 @@ export default function MessageFormatter({ content, className = '' }: MessageFor
   
   // Format inline elements like bold, italic, links
   const formatInlineElements = (text: string) => {
-    // Replace **bold** with <strong>
-    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Convert markdown bold (**text**) to HTML strong tags
+    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-black dark:text-white">$1</strong>')
     
-    // Replace *italic* with <em>
-    formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Convert markdown italic (*text*) to HTML em tags
+    formatted = formatted.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
     
-    // Replace [link text](url) with <a>
-    formatted = formatted.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">$1</a>')
+    // Convert markdown links ([text](url)) to HTML a tags
+    formatted = formatted.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">$1</a>')
     
-    // Replace `code` with <code>
-    formatted = formatted.replace(/`(.*?)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-sm">$1</code>')
+    // Convert markdown inline code (`code`) to HTML code tags
+    formatted = formatted.replace(/`(.*?)`/g, '<code class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono">$1</code>')
+    
+    // Highlight important information (e.g., "Important: text" or "Note: text")
+    formatted = formatted.replace(/(Important|Note|Warning|Tip):\s+(.*?)(?=\s*(?:<br>|$))/gi, 
+      '<span class="font-bold">$1:</span> <span class="bg-yellow-50 dark:bg-yellow-900/30 px-1 rounded">$2</span>');
     
     return <span dangerouslySetInnerHTML={{ __html: formatted }} />
   }
