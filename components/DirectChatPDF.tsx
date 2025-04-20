@@ -4,19 +4,17 @@ import { useEffect, useState } from 'react'
 import ChatPDF from './ChatPDF'
 
 export default function DirectChatPDF() {
-  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   const [pdfText, setPdfText] = useState('')
   const [pdfName, setPdfName] = useState('')
-  const [docType, setDocType] = useState<'research' | 'resume' | 'default'>('default')
 
   useEffect(() => {
     // Listen for the custom event to open the chat
     const handleOpenDirectChat = (event: CustomEvent) => {
-      setIsChatOpen(true)
-      const { pdfName, pdfText, type = 'default' } = event.detail
+      const { pdfName, pdfText } = event.detail
       setPdfName(pdfName)
       setPdfText(pdfText)
-      setDocType(type)
+      setIsOpen(true)
     }
 
     // Add event listener
@@ -30,11 +28,10 @@ export default function DirectChatPDF() {
 
   return (
     <ChatPDF
-      isOpen={isChatOpen}
-      onClose={() => setIsChatOpen(false)}
+      isOpen={isOpen}
+      onClose={() => setIsOpen(false)}
       pdfText={pdfText}
       pdfName={pdfName}
-      type={docType}
       className="ChatPDF-modal"
     />
   )

@@ -286,7 +286,7 @@ export default function Header() {
                   'px-3 py-2 text-sm font-medium rounded-md transition-colors relative',
                   isActive('/tools') ? activeButtonClass : inactiveButtonClass
                 )}>
-                Tools
+                AI Tools
               </button>
               <AnimatePresence>
                 {isToolsOpen && (

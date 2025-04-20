@@ -67,14 +67,9 @@ export default function ChatSession({ type, pdfText, pdfName, className = '' }: 
   // Scroll to bottom of messages when they change
   useEffect(() => {
     if (messagesEndRef.current) {
-      // Use a small timeout to ensure DOM updates complete before scrolling
-      const timeoutId = setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-      
-      return () => clearTimeout(timeoutId);
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
-  }, [activeSession?.messages, loading]);
+  }, [activeSession?.messages])
 
   // Save sessions to localStorage
   const saveSessions = (updatedSessions: ChatSession[]) => {
@@ -510,7 +505,7 @@ export default function ChatSession({ type, pdfText, pdfName, className = '' }: 
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4" id="chat-messages-container">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {activeSession.messages.map((message, index) => (
                 <div
                   key={index}
@@ -523,10 +518,11 @@ export default function ChatSession({ type, pdfText, pdfName, className = '' }: 
                         : 'bg-white border border-gray-200 rounded-bl-none text-gray-800'
                     }`}
                   >
-                    <MessageFormatter 
-                      content={message.content}
-                      className={message.role === 'user' ? 'text-white' : 'text-gray-800'}
-                    />
+                    {message.content.split('\n').map((line, i) => (
+                      <p key={i} className={i > 0 ? 'mt-2' : ''}>
+                        {line}
+                      </p>
+                    ))}
 
                     {/* Timestamp */}
                     <div className={`text-[10px] ${message.role === 'user' ? 'text-blue-200' : 'text-gray-400'} mt-1`}>
@@ -542,7 +538,7 @@ export default function ChatSession({ type, pdfText, pdfName, className = '' }: 
                   </div>
                 </div>
               )}
-              <div ref={messagesEndRef} className="h-1" />
+              <div ref={messagesEndRef} />
             </div>
 
             {/* Input Area */}

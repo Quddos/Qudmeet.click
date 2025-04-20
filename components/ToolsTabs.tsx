@@ -34,7 +34,7 @@ function classNames(...classes: string[]) {
 }
 
 export default function ToolsTabs() {
-  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [selectedIndex, setSelectedIndex] = useState(1)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {

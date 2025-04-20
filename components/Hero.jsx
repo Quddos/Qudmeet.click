@@ -5,6 +5,7 @@ import { QrCode, FileText, Bot, GraduationCap, Briefcase, Lightbulb } from 'luci
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import FileConverterModal from './FileConverterModal'
+import ToolsModal from './ToolsModal'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -134,6 +135,7 @@ const services = [
 
 export default function Hero() {
   const [isConverterOpen, setIsConverterOpen] = useState(false)
+  const [isToolsModalOpen, setIsToolsModalOpen] = useState(false)
   const router = useRouter()
 
   const handleServiceClick = (href, service) => {
@@ -192,7 +194,8 @@ export default function Hero() {
                 transition={{ delay: 0.4 }}
               >
                 <Button 
-                  className="px-8 py-6 text-lg font-semibold rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 hover:opacity-90 transition-opacity"
+                  onClick={() => setIsToolsModalOpen(true)}
+                  className="px-8 py-6 text-lg font-semibold rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 hover:opacity-90 transition-opacity hover:scale-105 transform duration-300"
                 >
                   Click into new Career
                 </Button>
@@ -236,6 +239,10 @@ export default function Hero() {
       <FileConverterModal 
         isOpen={isConverterOpen} 
         onClose={() => setIsConverterOpen(false)} 
+      />
+      <ToolsModal
+        isOpen={isToolsModalOpen}
+        onClose={() => setIsToolsModalOpen(false)}
       />
     </>
   )
