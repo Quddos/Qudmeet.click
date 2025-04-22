@@ -2,10 +2,10 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Loader2, FileText, SidebarClose, MessageSquare } from 'lucide-react'
+import { Loader2, FileText, SidebarClose, MessageSquare, Lightbulb } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
-import PDFHistorySidebar from './PDFHistorySidebar'
+// import PDFHistorySidebar from './PDFHistorySidebar'
 import ChatSession from './ChatSession'
 
 interface ResearchAnalysis {
@@ -20,6 +20,7 @@ interface ResearchAnalysis {
     tools: string[];
   };
   futureWork: string[];
+  potentialApplications?: Array<{ platform: string; description: string }>;
 }
 
 export default function ResearchAnalyzer() {
@@ -133,8 +134,6 @@ export default function ResearchAnalyzer() {
     }
   }
 
-
-
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
@@ -199,8 +198,8 @@ export default function ResearchAnalyzer() {
       </div>
 
       <div className="flex flex-col sm:flex-row">
-        {/* Sidebar */}
-        <AnimatePresence>
+        {/* Sidebar - Removed */}
+        {/* <AnimatePresence>
           {sidebarType && (
             <motion.div
               initial={{ width: 0, height: 0, opacity: 0 }}
@@ -226,22 +225,11 @@ export default function ResearchAnalyzer() {
               )}
             </motion.div>
           )}
-        </AnimatePresence>
-
+        </AnimatePresence> */}
+       
         {/* Main Content */}
         <div className="flex-1 space-y-8 relative">
-          {/* Sidebar Toggle Buttons */}
-          <div className="absolute top-0 left-0 flex sm:flex-col z-10">
-            <button
-              onClick={() => setSidebarType(sidebarType === 'pdf' ? null : 'pdf')}
-              className="p-2 bg-gray-200 hover:bg-gray-300 transition-colors flex items-center gap-1 text-xs rounded-tr-lg sm:rounded-tr-none sm:rounded-br-lg text-gray-700 relative"
-              title="PDF History"
-            >
-              {sidebarType === 'pdf' ? <SidebarClose className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
-              <span className="hidden sm:inline">PDFs</span>
-              <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">New!</span>
-            </button>
-          </div>
+      
 
           {/* Enhanced File Upload Section with Header */}
           <div className="text-center mb-4">
@@ -255,11 +243,10 @@ export default function ResearchAnalyzer() {
           <motion.div
             whileHover={{ scale: 1.01 }}
             {...(getRootProps() as any)}
-            className={`border-3 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-300 ${
-              isDragActive
+            className={`border-3 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-300 ${isDragActive
                 ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg'
                 : 'border-gray-300 hover:border-blue-400 bg-gradient-to-br from-gray-50 to-white hover:from-blue-50 hover:to-indigo-50 hover:shadow-md'
-            }`}
+              }`}
             initial={false}
           >
             <input {...getInputProps()} />
@@ -274,17 +261,16 @@ export default function ResearchAnalyzer() {
           </motion.div>
 
           {/* Action Button - Blue Bar */}
-          <div className="mt-6">
+          <div className="mt-4">
             <button
               onClick={handleAnalyze}
               disabled={!pdfText || loading}
-              className={`w-full py-3 px-4 rounded-lg font-medium flex items-center justify-center ${
-                !pdfText
+              className={`w-full py-3 px-4 rounded-lg font-medium flex items-center justify-center ${!pdfText
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : loading
-                  ? 'bg-blue-600 animate-pulse text-white'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
+                    ? 'bg-blue-600 animate-pulse text-white'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -307,12 +293,12 @@ export default function ResearchAnalyzer() {
                 className="space-y-8 bg-white rounded-xl p-6 shadow-lg"
               >
                 {/* Header Section with Blue Background */}
-                <div className="bg-blue-600 text-white p-4 rounded-t-lg">
+                {/* <div className="bg-blue-600 text-white p-4 rounded-t-lg">
                   <h2 className="text-xl font-bold text-center">Analyze Research Paper</h2>
-                </div>
+                </div> */}
 
                 {/* Info Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                   {/* Title Card */}
                   <div className="bg-blue-600 text-white p-4 rounded-lg">
                     <div>
@@ -336,14 +322,13 @@ export default function ResearchAnalyzer() {
                       <p className="text-sm font-semibold">{analysis.year}</p>
                     </div>
                   </div>
+                </div>
 
-                  {/* Area of Focus Card */}
-                  <div className="bg-blue-300 text-white p-4 rounded-lg">
-                    <div>
-                      <h3 className="text-xs font-medium mb-1">Area of Focus</h3>
-                      <p className="text-sm font-semibold">{analysis.areaOfFocus}</p>
-                    </div>
-                  </div>
+
+                {/* Enhanced Area of Focus - Full Width */}
+                <div className="mt-6 bg-blue-100 border border-blue-300 text-blue-900 p-6 rounded-xl shadow-md">
+                  <h3 className="text-xl font-bold mb-3">Area of Focus</h3>
+                  <p className="text-lg">{analysis.areaOfFocus}</p>
                 </div>
 
                 {/* Key Contributions Section */}
@@ -382,47 +367,68 @@ export default function ResearchAnalyzer() {
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Research Methodology</h3>
                   <div className="bg-white border border-gray-200 rounded-lg p-4">
                     <div className="text-xs text-gray-700">
-                      <span className="font-semibold">SPSS, student experiments, design with independent variables (virtual assistant configuration) and cognitive complexity level</span>
-                      <div className="grid grid-cols-4 gap-2 mt-3">
-                        <div className="text-center">
-                          <div className="font-semibold mb-1">Data gathering</div>
-                          <div className="text-gray-500 text-[10px]">Online surveys (N=1000+)</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-semibold mb-1">Virtual Reality Used</div>
-                          <div className="text-gray-500 text-[10px]">Oculus Quest 2</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-semibold mb-1">Software</div>
-                          <div className="text-gray-500 text-[10px]">Unity3D</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-semibold mb-1">Audio SDK (Recording)</div>
-                          <div className="text-gray-500 text-[10px]">Resonance</div>
-                        </div>
+                      <span className="font-semibold text-gray-800 text-sm mb-3 block">{analysis.methodology.approach}</span>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+                        {analysis.methodology.tools.map((tool, index) => (
+                          <div key={index} className="bg-violet-100 text-violet-800 rounded-full px-4 py-2 text-sm font-medium text-center">
+                            {tool}
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Future Work Section */}
-                <div className="mt-8">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Future Work</h3>
-                  <div className="bg-white border border-gray-200 rounded-lg p-4">
-                    <ul className="space-y-2">
-                      {analysis.futureWork.map((item, index) => (
-                        <li key={index} className="flex items-start">
-                          <div className="flex-shrink-0 mr-2 mt-0.5">
-                            <div className="w-4 h-4 rounded-full border border-gray-400 flex items-center justify-center">
-                              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                <motion.div className="space-y-6">
+                  <h3 className="text-2xl font-bold text-gray-900">Future Work</h3>
+                  <ul className="space-y-3">
+                    {analysis.futureWork.map((item, index) => (
+                      <motion.li
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="flex items-start space-x-3"
+                      >
+                        <Lightbulb className="w-6 h-6 text-emerald-500 flex-shrink-0 mt-1" />
+                        <span className="text-gray-700">{item}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </motion.div>
+
+                {/* Potential Applications with Other Technologies */}
+                {analysis.potentialApplications && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="space-y-6"
+                  >
+                    <h3 className="text-2xl font-bold text-gray-900">Applications with Other Technologies</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {analysis.potentialApplications.map((application, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-6 shadow-md
+                            hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                        >
+                          <div className="flex items-center space-x-3 mb-4">
+                            <div className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                              {index + 1}
                             </div>
+                            <h4 className="font-semibold text-purple-900">{application.platform}</h4>
                           </div>
-                          <span className="text-gray-700 text-xs">{item}</span>
-                        </li>
+                          <p className="text-gray-700">{application.description}</p>
+                        </motion.div>
                       ))}
-                    </ul>
-                  </div>
-                </div>
+                    </div>
+                  </motion.div>
+                )}
 
                 {/* Chat with this PDF button */}
                 <motion.div
